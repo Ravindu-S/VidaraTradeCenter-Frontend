@@ -55,6 +55,10 @@ const LoginForm = () => {
       const tokenValue = result?.data?.token || result?.token;
       const userData = result?.data || result;
 
+      console.log("[Login] Full response:", JSON.stringify(result));
+      console.log("[Login] Token:", tokenValue ? "present" : "MISSING");
+      console.log("[Login] User data:", JSON.stringify(userData));
+
       login(tokenValue, userData);
       showSuccess("Login successful!");
       navigate("/");

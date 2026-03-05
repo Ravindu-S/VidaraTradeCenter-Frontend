@@ -8,6 +8,10 @@ import Profile from "./pages/profile/Profile";
 import Addresses from "./pages/profile/Addresses";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import NotFound from "./pages/NotFound";
+import AdminRoute from "./components/admin/AdminRoute";
+import AdminLayout from "./components/admin/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import Users from "./pages/admin/Users";
 
 function App() {
   return (
@@ -26,6 +30,12 @@ function App() {
         {/* <Route path="products/:id" element={<ProductDetailPage />} /> */}
 
         <Route path="*" element={<NotFound />} />
+      </Route>
+
+      {/* DEV 2: Admin Panel */}
+      <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+        <Route index element={<Dashboard />} />
+        <Route path="users" element={<Users />} />
       </Route>
     </Routes>
   );
