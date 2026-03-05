@@ -130,6 +130,16 @@ const Navbar = () => {
                       <span className="material-symbols-outlined text-lg">location_on</span>
                       My Addresses
                     </Link>
+                    {(user?.role === "ADMIN" || user?.roles?.includes("ADMIN")) && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-indigo-600 hover:bg-indigo-50 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
+                        Admin Panel
+                      </Link>
+                    )}
                     <div className="border-t border-slate-100 mt-1 pt-1">
                       <button
                         onClick={handleLogout}
