@@ -12,6 +12,15 @@ import AdminRoute from "./components/admin/AdminRoute";
 import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import Users from "./pages/admin/Users";
+<<<<<<< HEAD
+import Products from "./pages/admin/Products";
+import ProductForm from "./pages/admin/ProductForm";
+import Categories from "./pages/admin/Categories";
+import Brands from "./pages/admin/Brands";
+import ProductList from "./pages/products/ProductList";
+import ProductDetailPage from "./pages/products/ProductDetailPage";
+=======
+>>>>>>> origin/dev
 
 function App() {
   return (
@@ -25,9 +34,15 @@ function App() {
         <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="profile/addresses" element={<ProtectedRoute><Addresses /></ProtectedRoute>} />
 
+<<<<<<< HEAD
+        {/* DEV 3: Product Catalog */}
+        <Route path="products" element={<ProductList />} />
+        <Route path="products/:id" element={<ProductDetailPage />} />
+=======
         {/* DEV 3 will add: */}
         {/* <Route path="products" element={<ProductList />} /> */}
         {/* <Route path="products/:id" element={<ProductDetailPage />} /> */}
+>>>>>>> origin/dev
 
         <Route path="*" element={<NotFound />} />
       </Route>
@@ -36,6 +51,14 @@ function App() {
       <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="users" element={<Users />} />
+<<<<<<< HEAD
+        <Route path="products" element={<Products />} />
+        <Route path="products/new" element={<ProductForm />} />
+        <Route path="products/:id/edit" element={<ProductForm />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="brands" element={<Brands />} />
+=======
+>>>>>>> origin/dev
       </Route>
     </Routes>
   );

@@ -17,10 +17,19 @@ const Home = () => {
         const response = await getProducts({ page: 0, size: 4 });
         const data = response.data;
 
+<<<<<<< HEAD
+        // Handle ApiResponse<PagedResponse> OR plain PagedResponse OR plain array
+        let products = [];
+        if (Array.isArray(data)) {
+          products = data;
+        } else if (data?.data?.content && Array.isArray(data.data.content)) {
+          products = data.data.content; // ApiResponse<PagedResponse> format
+=======
         // Handle Spring Boot PagedResponse OR plain array
         let products = [];
         if (Array.isArray(data)) {
           products = data;
+>>>>>>> origin/dev
         } else if (data?.content && Array.isArray(data.content)) {
           products = data.content; // PagedResponse format
         } else if (data?.products && Array.isArray(data.products)) {
@@ -53,6 +62,13 @@ const Home = () => {
   };
 
   const getImageUrl = (product) => {
+<<<<<<< HEAD
+    return product.primaryImageUrl || product.imageUrl || null;
+  };
+
+  const getCategoryName = (product) => {
+    if (product.categoryName) return product.categoryName;
+=======
     // DEV 3: Make sure ProductResponse has one of these fields
     return (
       product.imageUrl ||
@@ -64,6 +80,7 @@ const Home = () => {
   };
 
   const getCategoryName = (product) => {
+>>>>>>> origin/dev
     if (!product.category) return "";
     if (typeof product.category === "string") return product.category;
     if (typeof product.category === "object") return product.category.name || "";
@@ -344,7 +361,11 @@ const Home = () => {
                           {getCategoryName(product)}
                         </p>
                         <p className="font-bold text-primary dark:text-white">
+<<<<<<< HEAD
+                          {formatPrice(product.salePrice || product.basePrice)}
+=======
                           {formatPrice(product.price)}
+>>>>>>> origin/dev
                         </p>
                       </div>
                     </div>

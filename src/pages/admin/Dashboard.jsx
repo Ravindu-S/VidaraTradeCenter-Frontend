@@ -72,6 +72,10 @@ const Dashboard = () => {
       color: "bg-amber-500",
       bgLight: "bg-amber-50",
       textColor: "text-amber-600",
+<<<<<<< HEAD
+      link: "/admin/products",
+=======
+>>>>>>> origin/dev
     },
     {
       title: "Categories",
@@ -183,6 +187,27 @@ const Dashboard = () => {
               <span className="text-sm font-medium text-gray-700">Manage Users</span>
             </Link>
             <Link
+<<<<<<< HEAD
+              to="/admin/products"
+              className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors"
+            >
+              <svg className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              <span className="text-sm font-medium text-gray-700">Manage Products</span>
+            </Link>
+            <Link
+              to="/admin/products/new"
+              className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors"
+            >
+              <svg className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+              </svg>
+              <span className="text-sm font-medium text-gray-700">Add Product</span>
+            </Link>
+            <Link
+=======
+>>>>>>> origin/dev
               to="/"
               className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors"
             >
