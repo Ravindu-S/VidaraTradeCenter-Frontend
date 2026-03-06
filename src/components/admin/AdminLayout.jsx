@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -13,14 +13,10 @@ const AdminLayout = () => {
     navigate("/login");
   };
 
-<<<<<<< HEAD
   const isActive = (path) => {
     if (path === "/admin") return location.pathname === "/admin";
     return location.pathname.startsWith(path);
   };
-=======
-  const isActive = (path) => location.pathname === path;
->>>>>>> origin/dev
 
   const navItems = [
     {
@@ -41,7 +37,6 @@ const AdminLayout = () => {
         </svg>
       ),
     },
-<<<<<<< HEAD
     {
       path: "/admin/products",
       label: "Products",
@@ -69,8 +64,6 @@ const AdminLayout = () => {
         </svg>
       ),
     },
-=======
->>>>>>> origin/dev
   ];
 
   return (
@@ -189,3 +182,5 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
+
+
