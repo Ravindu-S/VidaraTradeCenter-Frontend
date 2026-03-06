@@ -72,7 +72,10 @@ const Dashboard = () => {
       color: "bg-amber-500",
       bgLight: "bg-amber-50",
       textColor: "text-amber-600",
+<<<<<<< HEAD
       link: "/admin/products",
+=======
+>>>>>>> origin/dev
     },
     {
       title: "Categories",
@@ -184,6 +187,7 @@ const Dashboard = () => {
               <span className="text-sm font-medium text-gray-700">Manage Users</span>
             </Link>
             <Link
+<<<<<<< HEAD
               to="/admin/products"
               className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors"
             >
@@ -202,6 +206,8 @@ const Dashboard = () => {
               <span className="text-sm font-medium text-gray-700">Add Product</span>
             </Link>
             <Link
+=======
+>>>>>>> origin/dev
               to="/"
               className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors"
             >

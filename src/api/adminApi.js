@@ -1,14 +1,20 @@
 import API from "./axios";
 
+<<<<<<< HEAD
 // ==================== DASHBOARD ====================
 
+=======
+>>>>>>> origin/dev
 // GET /api/admin/dashboard/stats
 export const getDashboardStats = () => {
   return API.get("/admin/dashboard/stats");
 };
 
+<<<<<<< HEAD
 // ==================== USERS ====================
 
+=======
+>>>>>>> origin/dev
 // GET /api/admin/users
 export const getAdminUsers = (params = {}) => {
   return API.get("/admin/users", { params });
@@ -23,6 +29,7 @@ export const updateUserStatus = (id, status) => {
 export const deleteAdminUser = (id) => {
   return API.delete(`/admin/users/${id}`);
 };
+<<<<<<< HEAD
 
 // ==================== PRODUCTS ====================
 
@@ -109,3 +116,5 @@ export const updateAdminBrand = (id, data) => {
 export const deleteAdminBrand = (id) => {
   return API.delete(`/brands/${id}`);
 };
+=======
+>>>>>>> origin/dev

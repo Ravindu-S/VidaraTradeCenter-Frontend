@@ -13,10 +13,14 @@ const AdminLayout = () => {
     navigate("/login");
   };
 
+<<<<<<< HEAD
   const isActive = (path) => {
     if (path === "/admin") return location.pathname === "/admin";
     return location.pathname.startsWith(path);
   };
+=======
+  const isActive = (path) => location.pathname === path;
+>>>>>>> origin/dev
 
   const navItems = [
     {
@@ -37,6 +41,7 @@ const AdminLayout = () => {
         </svg>
       ),
     },
+<<<<<<< HEAD
     {
       path: "/admin/products",
       label: "Products",
@@ -64,6 +69,8 @@ const AdminLayout = () => {
         </svg>
       ),
     },
+=======
+>>>>>>> origin/dev
   ];
 
   return (
