@@ -1,0 +1,74 @@
+import React from "react";
+import { Link } from "react-router-dom";
+
+const ProductCard = ({ product }) => {
+  const formatPrice = (price) => {
+    if (price == null) return "$0.00";
+    return `$${Number(price).toFixed(2)}`;
+  };
+
+  const imageUrl = product.primaryImageUrl || null;
+  const hasDiscount =
+    product.salePrice && product.salePrice < product.basePrice;
+
+  return (
+    <Link to={`/products/${product.id}`} className="group flex flex-col gap-4">
+      {/* Image */}
+      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
+        {imageUrl ? (
+          <div
+            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+            style={{ backgroundImage: `url("${imageUrl}")` }}
+            role="img"
+            aria-label={product.name}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="material-symbols-outlined text-6xl text-slate-300 dark:text-slate-600">
+              image
+            </span>
+          </div>
+        )}
+
+        {hasDiscount && (
+          <div className="absolute left-4 top-4 rounded-lg bg-red-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+            Sale
+          </div>
+        )}
+
+        <button
+          onClick={(e) => e.preventDefault()}
+          className="absolute bottom-4 right-4 flex h-10 w-10 translate-y-4 items-center justify-center rounded-full bg-white text-primary opacity-0 shadow-lg transition-all group-hover:translate-y-0 group-hover:opacity-100 hover:bg-slate-50"
+        >
+          <span className="material-symbols-outlined">add_shopping_cart</span>
+        </button>
+      </div>
+
+      {/* Info */}
+      <div className="flex flex-col gap-1">
+        <h3 className="line-clamp-1 font-semibold text-slate-900 dark:text-white">
+          {product.name}
+        </h3>
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+            {product.categoryName || ""}
+          </p>
+          <div className="flex items-center gap-2">
+            {hasDiscount && (
+              <span className="text-sm text-slate-400 line-through">
+                {formatPrice(product.basePrice)}
+              </span>
+            )}
+            <span className="font-bold text-primary dark:text-white">
+              {formatPrice(
+                hasDiscount ? product.salePrice : product.basePrice
+              )}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+};
+
+export default ProductCard;

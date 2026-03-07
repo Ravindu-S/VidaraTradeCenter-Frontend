@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Loader from "../components/common/Loader";
 import { getProducts } from "../api/productApi";
@@ -17,10 +17,12 @@ const Home = () => {
         const response = await getProducts({ page: 0, size: 4 });
         const data = response.data;
 
-        // Handle Spring Boot PagedResponse OR plain array
+        // Handle ApiResponse<PagedResponse> OR plain PagedResponse OR plain array
         let products = [];
         if (Array.isArray(data)) {
           products = data;
+        } else if (data?.data?.content && Array.isArray(data.data.content)) {
+          products = data.data.content; // ApiResponse<PagedResponse> format
         } else if (data?.content && Array.isArray(data.content)) {
           products = data.content; // PagedResponse format
         } else if (data?.products && Array.isArray(data.products)) {
@@ -53,17 +55,11 @@ const Home = () => {
   };
 
   const getImageUrl = (product) => {
-    // DEV 3: Make sure ProductResponse has one of these fields
-    return (
-      product.imageUrl ||
-      product.image_url ||
-      product.image ||
-      product.thumbnail ||
-      null
-    );
+    return product.primaryImageUrl || product.imageUrl || null;
   };
 
   const getCategoryName = (product) => {
+    if (product.categoryName) return product.categoryName;
     if (!product.category) return "";
     if (typeof product.category === "string") return product.category;
     if (typeof product.category === "object") return product.category.name || "";
@@ -314,7 +310,7 @@ const Home = () => {
                       <button
                         onClick={(e) => {
                           e.preventDefault();
-                          // TODO: DEV 3 — Add to cart logic
+                          // TODO: DEV 3 â€” Add to cart logic
                           console.log("Add to cart:", product.id);
                         }}
                         className="absolute bottom-4 right-4 flex h-10 w-10 translate-y-4 items-center justify-center rounded-full bg-white text-primary opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100 shadow-lg hover:bg-slate-50"
@@ -344,7 +340,7 @@ const Home = () => {
                           {getCategoryName(product)}
                         </p>
                         <p className="font-bold text-primary dark:text-white">
-                          {formatPrice(product.price)}
+                          {formatPrice(product.salePrice || product.basePrice)}
                         </p>
                       </div>
                     </div>

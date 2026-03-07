@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getDashboardStats } from "../../api/adminApi";
 import { useToast } from "../../context/ToastContext";
-
 const Dashboard = () => {
   const { showError } = useToast();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     fetchStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   const fetchStats = async () => {
     try {
       const response = await getDashboardStats();
@@ -23,7 +20,6 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -34,7 +30,6 @@ const Dashboard = () => {
       </div>
     );
   }
-
   const statCards = [
     {
       title: "Total Users",
@@ -72,6 +67,7 @@ const Dashboard = () => {
       color: "bg-amber-500",
       bgLight: "bg-amber-50",
       textColor: "text-amber-600",
+      link: "/admin/products",
     },
     {
       title: "Categories",
@@ -112,16 +108,12 @@ const Dashboard = () => {
       comingSoon: true,
     },
   ];
-
   return (
     <div>
-      {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p className="mt-1 text-sm text-gray-500">Overview of your store's performance</p>
       </div>
-
-      {/* Stat Cards */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {statCards.map((card) => (
           <div
@@ -156,10 +148,7 @@ const Dashboard = () => {
           </div>
         ))}
       </div>
-
-      {/* User Breakdown */}
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* User Status */}
         <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
           <h2 className="text-lg font-bold text-gray-900 mb-4">User Status Breakdown</h2>
           <div className="space-y-4">
@@ -168,24 +157,28 @@ const Dashboard = () => {
             <StatusBar label="Banned" count={stats?.bannedUsers ?? 0} total={stats?.totalUsers || 1} color="bg-red-500" />
           </div>
         </div>
-
-        {/* Quick Actions */}
         <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
           <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-3">
-            <Link
-              to="/admin/users"
-              className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors"
-            >
+            <Link to="/admin/users" className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors">
               <svg className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
               <span className="text-sm font-medium text-gray-700">Manage Users</span>
             </Link>
-            <Link
-              to="/"
-              className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors"
-            >
+            <Link to="/admin/products" className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors">
+              <svg className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              <span className="text-sm font-medium text-gray-700">Manage Products</span>
+            </Link>
+            <Link to="/admin/products/new" className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors">
+              <svg className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+              </svg>
+              <span className="text-sm font-medium text-gray-700">Add Product</span>
+            </Link>
+            <Link to="/" className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 p-4 text-center hover:border-indigo-200 hover:bg-indigo-50 transition-colors">
               <svg className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
@@ -197,7 +190,6 @@ const Dashboard = () => {
     </div>
   );
 };
-
 const StatusBar = ({ label, count, total, color }) => {
   const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
   return (
@@ -207,13 +199,9 @@ const StatusBar = ({ label, count, total, color }) => {
         <span className="text-sm font-semibold text-gray-900">{count} ({percentage}%)</span>
       </div>
       <div className="h-2 w-full rounded-full bg-gray-100">
-        <div
-          className={`h-2 rounded-full ${color} transition-all duration-500`}
-          style={{ width: `${percentage}%` }}
-        />
+        <div className={`h-2 rounded-full ${color} transition-all duration-500`} style={{ width: `${percentage}%` }} />
       </div>
     </div>
   );
 };
-
 export default Dashboard;
