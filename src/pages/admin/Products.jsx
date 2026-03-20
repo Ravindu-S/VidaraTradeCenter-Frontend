@@ -184,6 +184,12 @@ const Products = () => {
                   >
                     Price <SortIcon field="basePrice" />
                   </th>
+                  <th
+                    className="px-5 py-3 text-left font-medium text-gray-500 cursor-pointer hover:text-gray-900"
+                    onClick={() => handleSort("stock")}
+                  >
+                    Stock <SortIcon field="stock" />
+                  </th>
                   <th className="px-5 py-3 text-left font-medium text-gray-500">Category</th>
                   <th className="px-5 py-3 text-left font-medium text-gray-500">Brand</th>
                   <th className="px-5 py-3 text-left font-medium text-gray-500">Status</th>
@@ -231,6 +237,31 @@ const Products = () => {
                         <p className="font-medium text-gray-900">{formatPrice(product.basePrice)}</p>
                         {product.salePrice && (
                           <p className="text-xs text-green-600">{formatPrice(product.salePrice)}</p>
+                        )}
+                      </div>
+                    </td>
+                    {/* Stock */}
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-1.5">
+                        {product.stock > 0 ? (
+                          <>
+                            {product.stock <= (product.lowStockThreshold || 10) ? (
+                              <>
+                                <span className="flex h-2 w-2 rounded-full bg-orange-500"></span>
+                                <span className="text-orange-600 font-medium">{product.stock}</span>
+                              </>
+                            ) : (
+                              <>
+                                <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
+                                <span className="text-gray-900 font-medium">{product.stock}</span>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <span className="flex h-2 w-2 rounded-full bg-red-500"></span>
+                            <span className="text-red-600 font-medium">0</span>
+                          </>
                         )}
                       </div>
                     </td>
@@ -318,11 +349,10 @@ const Products = () => {
                   <button
                     key={pageNum}
                     onClick={() => setPage(pageNum)}
-                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                      page === pageNum
-                        ? "bg-gray-900 text-white"
-                        : "text-gray-600 hover:bg-gray-50"
-                    }`}
+                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${page === pageNum
+                      ? "bg-gray-900 text-white"
+                      : "text-gray-600 hover:bg-gray-50"
+                      }`}
                   >
                     {pageNum + 1}
                   </button>

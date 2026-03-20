@@ -49,6 +49,17 @@ const ProductDetailPage = () => {
       return;
     }
 
+    // Check stock availability
+    if (!product.stock || product.stock <= 0) {
+      alert("This product is out of stock");
+      return;
+    }
+
+    if (quantity > product.stock) {
+      alert(`Only ${product.stock} items available in stock`);
+      return;
+    }
+
     setAddingToCart(true);
     const result = await addToCart(product.id, quantity);
     setAddingToCart(false);
@@ -63,7 +74,9 @@ const ProductDetailPage = () => {
 
   const handleQuantityChange = (delta) => {
     const newQuantity = quantity + delta;
-    if (newQuantity >= 1) {
+    const maxStock = product?.stock || 0;
+
+    if (newQuantity >= 1 && newQuantity <= maxStock) {
       setQuantity(newQuantity);
     }
   };
@@ -158,8 +171,8 @@ const ProductDetailPage = () => {
                   key={img.id || i}
                   onClick={() => setSelectedImage(i)}
                   className={`h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-colors ${i === selectedImage
-                      ? "border-primary"
-                      : "border-transparent hover:border-slate-300"
+                    ? "border-primary"
+                    : "border-transparent hover:border-slate-300"
                     }`}
                 >
                   <img
@@ -199,6 +212,30 @@ const ProductDetailPage = () => {
 
           {/* SKU */}
           <p className="mt-1 text-xs text-slate-400">SKU: {product.sku}</p>
+
+          {/* Stock Status */}
+          <div className="mt-2 flex items-center gap-2">
+            {product.stock > 0 ? (
+              <>
+                {product.stock <= (product.lowStockThreshold || 10) ? (
+                  <span className="flex items-center gap-1 text-sm text-orange-600 dark:text-orange-400">
+                    <span className="material-symbols-outlined text-sm">warning</span>
+                    Only {product.stock} left in stock
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+                    <span className="material-symbols-outlined text-sm">check_circle</span>
+                    In Stock ({product.stock} available)
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400">
+                <span className="material-symbols-outlined text-sm">cancel</span>
+                Out of Stock
+              </span>
+            )}
+          </div>
 
           {/* Price */}
           <div className="mt-4 flex items-baseline gap-3">
@@ -274,40 +311,51 @@ const ProductDetailPage = () => {
           {/* Quantity & Add to Cart */}
           <div className="mt-8 space-y-4">
             {/* Quantity Selector */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                Quantity:
-              </span>
-              <div className="flex items-center border-2 border-slate-200 dark:border-slate-700 rounded-lg">
-                <button
-                  onClick={() => handleQuantityChange(-1)}
-                  disabled={quantity <= 1}
-                  className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <span className="material-symbols-outlined text-sm">remove</span>
-                </button>
-                <span className="px-6 py-2 text-base font-medium text-slate-900 dark:text-white min-w-[60px] text-center">
-                  {quantity}
+            {product.stock > 0 && (
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Quantity:
                 </span>
-                <button
-                  onClick={() => handleQuantityChange(1)}
-                  className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-sm">add</span>
-                </button>
+                <div className="flex items-center border-2 border-slate-200 dark:border-slate-700 rounded-lg">
+                  <button
+                    onClick={() => handleQuantityChange(-1)}
+                    disabled={quantity <= 1}
+                    className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm">remove</span>
+                  </button>
+                  <span className="px-6 py-2 text-base font-medium text-slate-900 dark:text-white min-w-[60px] text-center">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => handleQuantityChange(1)}
+                    disabled={quantity >= product.stock}
+                    className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm">add</span>
+                  </button>
+                </div>
+                <span className="text-xs text-slate-500 dark:text-slate-400">
+                  Max: {product.stock}
+                </span>
               </div>
-            </div>
+            )}
 
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
-              disabled={addingToCart}
+              disabled={addingToCart || !product.stock || product.stock <= 0}
               className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-primary px-8 text-base font-bold text-white transition-transform active:scale-95 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {addingToCart ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                   Adding...
+                </>
+              ) : product.stock <= 0 ? (
+                <>
+                  <span className="material-symbols-outlined">block</span>
+                  Out of Stock
                 </>
               ) : (
                 <>

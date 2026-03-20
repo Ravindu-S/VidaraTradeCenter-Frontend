@@ -21,17 +21,26 @@ const ProductCard = ({ product }) => {
       return;
     }
 
+    // Check stock availability
+    if (!product.stock || product.stock <= 0) {
+      alert("This product is out of stock");
+      return;
+    }
+
     const result = await addToCart(product.id, 1);
     if (result.success) {
       console.log("Added to cart successfully");
     } else {
       console.error("Failed to add to cart:", result.error);
+      alert(result.error || "Failed to add item to cart");
     }
   };
 
   const imageUrl = product.primaryImageUrl || null;
   const hasDiscount =
     product.salePrice && product.salePrice < product.basePrice;
+  const isOutOfStock = !product.stock || product.stock <= 0;
+  const isLowStock = product.stock > 0 && product.stock <= (product.lowStockThreshold || 10);
 
   return (
     <Link to={`/products/${product.id}`} className="group flex flex-col gap-4">
@@ -52,18 +61,32 @@ const ProductCard = ({ product }) => {
           </div>
         )}
 
-        {hasDiscount && (
+        {hasDiscount && !isOutOfStock && (
           <div className="absolute left-4 top-4 rounded-lg bg-red-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
             Sale
           </div>
         )}
 
-        <button
-          onClick={handleAddToCart}
-          className="absolute bottom-4 right-4 flex h-10 w-10 translate-y-4 items-center justify-center rounded-full bg-white text-primary opacity-0 shadow-lg transition-all group-hover:translate-y-0 group-hover:opacity-100 hover:bg-slate-50"
-        >
-          <span className="material-symbols-outlined">add_shopping_cart</span>
-        </button>
+        {isOutOfStock && (
+          <div className="absolute left-4 top-4 rounded-lg bg-slate-900 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+            Out of Stock
+          </div>
+        )}
+
+        {isLowStock && !isOutOfStock && (
+          <div className="absolute left-4 top-4 rounded-lg bg-orange-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+            Low Stock
+          </div>
+        )}
+
+        {!isOutOfStock && (
+          <button
+            onClick={handleAddToCart}
+            className="absolute bottom-4 right-4 flex h-10 w-10 translate-y-4 items-center justify-center rounded-full bg-white text-primary opacity-0 shadow-lg transition-all group-hover:translate-y-0 group-hover:opacity-100 hover:bg-slate-50"
+          >
+            <span className="material-symbols-outlined">add_shopping_cart</span>
+          </button>
+        )}
       </div>
 
       {/* Info */}
