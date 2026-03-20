@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getProductById } from "../../api/productApi";
@@ -69,7 +67,6 @@ const ProductDetailPage = () => {
       setQuantity(newQuantity);
     }
   };
-
 
   if (loading) {
     return (
@@ -351,4 +348,3 @@ const ProductDetailPage = () => {
 };
 
 export default ProductDetailPage;
->>>>>>> Stashed changes
