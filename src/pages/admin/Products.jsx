@@ -243,25 +243,29 @@ const Products = () => {
                     {/* Stock */}
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5">
-                        {product.stock > 0 ? (
-                          <>
-                            {product.stock <= (product.lowStockThreshold || 10) ? (
-                              <>
-                                <span className="flex h-2 w-2 rounded-full bg-orange-500"></span>
-                                <span className="text-orange-600 font-medium">{product.stock}</span>
-                              </>
-                            ) : (
-                              <>
-                                <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
-                                <span className="text-gray-900 font-medium">{product.stock}</span>
-                              </>
-                            )}
-                          </>
+                        {product.stock !== undefined && product.stock !== null ? (
+                          product.stock > 0 ? (
+                            <>
+                              {product.stock <= (product.lowStockThreshold || 10) ? (
+                                <>
+                                  <span className="flex h-2 w-2 rounded-full bg-orange-500"></span>
+                                  <span className="text-orange-600 font-medium">{product.stock}</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
+                                  <span className="text-gray-900 font-medium">{product.stock}</span>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <span className="flex h-2 w-2 rounded-full bg-red-500"></span>
+                              <span className="text-red-600 font-medium">0</span>
+                            </>
+                          )
                         ) : (
-                          <>
-                            <span className="flex h-2 w-2 rounded-full bg-red-500"></span>
-                            <span className="text-red-600 font-medium">0</span>
-                          </>
+                          <span className="text-gray-400 text-xs">—</span>
                         )}
                       </div>
                     </td>

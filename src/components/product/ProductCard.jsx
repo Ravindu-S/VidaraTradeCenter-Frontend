@@ -21,8 +21,8 @@ const ProductCard = ({ product }) => {
       return;
     }
 
-    // Check stock availability
-    if (!product.stock || product.stock <= 0) {
+    // Check stock availability only if stock data is available
+    if (product.stock !== undefined && product.stock !== null && product.stock <= 0) {
       alert("This product is out of stock");
       return;
     }
@@ -39,8 +39,11 @@ const ProductCard = ({ product }) => {
   const imageUrl = product.primaryImageUrl || null;
   const hasDiscount =
     product.salePrice && product.salePrice < product.basePrice;
-  const isOutOfStock = !product.stock || product.stock <= 0;
-  const isLowStock = product.stock > 0 && product.stock <= (product.lowStockThreshold || 10);
+
+  // Handle stock - if stock is undefined/null, assume it's available (backward compatibility)
+  const hasStockData = product.stock !== undefined && product.stock !== null;
+  const isOutOfStock = hasStockData && product.stock <= 0;
+  const isLowStock = hasStockData && product.stock > 0 && product.stock <= (product.lowStockThreshold || 10);
 
   return (
     <Link to={`/products/${product.id}`} className="group flex flex-col gap-4">
@@ -61,24 +64,22 @@ const ProductCard = ({ product }) => {
           </div>
         )}
 
-        {hasDiscount && !isOutOfStock && (
-          <div className="absolute left-4 top-4 rounded-lg bg-red-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-            Sale
-          </div>
-        )}
-
-        {isOutOfStock && (
+        {/* Priority: Out of Stock > Low Stock > Sale */}
+        {isOutOfStock ? (
           <div className="absolute left-4 top-4 rounded-lg bg-slate-900 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
             Out of Stock
           </div>
-        )}
-
-        {isLowStock && !isOutOfStock && (
+        ) : isLowStock ? (
           <div className="absolute left-4 top-4 rounded-lg bg-orange-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
             Low Stock
           </div>
-        )}
+        ) : hasDiscount ? (
+          <div className="absolute left-4 top-4 rounded-lg bg-red-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+            Sale
+          </div>
+        ) : null}
 
+        {/* Show cart button if not out of stock */}
         {!isOutOfStock && (
           <button
             onClick={handleAddToCart}
@@ -94,6 +95,26 @@ const ProductCard = ({ product }) => {
         <h3 className="line-clamp-1 font-semibold text-slate-900 dark:text-white">
           {product.name}
         </h3>
+
+        {/* Stock Status Text */}
+        {hasStockData && (
+          <div className="flex items-center gap-1.5">
+            {isOutOfStock ? (
+              <span className="text-xs text-red-600 dark:text-red-400 font-medium">
+                Out of Stock
+              </span>
+            ) : isLowStock ? (
+              <span className="text-xs text-orange-600 dark:text-orange-400 font-medium">
+                Only {product.stock} left
+              </span>
+            ) : (
+              <span className="text-xs text-green-600 dark:text-green-400 font-medium">
+                In Stock
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="flex items-center justify-between">
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             {product.categoryName || ""}
