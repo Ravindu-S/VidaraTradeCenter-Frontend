@@ -9,9 +9,8 @@ const CartSummary = ({ cart, onCheckout }) => {
   };
 
   const subtotal = cart?.totalAmount || 0;
-  const shipping = subtotal > 0 ? 10.0 : 0; // Example shipping cost
-  const tax = subtotal * 0.1; // Example 10% tax
-  const total = subtotal + shipping + tax;
+  const shipping = subtotal > 0 ? 350.0 : 0; // Shipping fee
+  const total = subtotal + shipping;
 
   return (
     <Card className="sticky top-24">
@@ -33,15 +32,6 @@ const CartSummary = ({ cart, onCheckout }) => {
           <span className="text-slate-600 dark:text-slate-400">Shipping</span>
           <span className="font-medium text-slate-900 dark:text-white">
             {subtotal > 0 ? formatPrice(shipping) : "-"}
-          </span>
-        </div>
-
-        <div className="flex justify-between text-sm">
-          <span className="text-slate-600 dark:text-slate-400">
-            Estimated Tax
-          </span>
-          <span className="font-medium text-slate-900 dark:text-white">
-            {formatPrice(tax)}
           </span>
         </div>
 
