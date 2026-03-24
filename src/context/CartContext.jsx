@@ -102,6 +102,23 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const syncCartPrices = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await cartApi.syncCartPrices();
+      setCart(response.data?.data || response.data);
+      return { success: true };
+    } catch (err) {
+      console.error("Failed to sync cart prices:", err);
+      const errorMessage = err.response?.data?.message || "Failed to sync cart prices";
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const cartItemCount = cart?.totalItems || 0;
   const cartTotal = cart?.totalAmount || 0;
 
@@ -116,6 +133,7 @@ export const CartProvider = ({ children }) => {
     updateCartItem,
     removeCartItem,
     clearCart,
+    syncCartPrices,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

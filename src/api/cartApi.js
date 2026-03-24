@@ -57,3 +57,8 @@ export const removeCartItem = (cartItemId) => {
 export const clearCart = () => {
   return API.delete("/cart/clear");
 };
+
+// POST /api/cart/sync-prices
+export const syncCartPrices = () => {
+  return API.post("/cart/sync-prices");
+};

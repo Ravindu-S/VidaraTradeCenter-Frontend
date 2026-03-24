@@ -7,8 +7,8 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const formatPrice = (price) => {
-    if (price == null) return "$0.00";
-    return `$${Number(price).toFixed(2)}`;
+    if (price == null) return "LKR 0.00";
+    return `LKR ${Number(price).toFixed(2)}`;
   };
 
   const handleQuantityChange = async (newQuantity) => {
@@ -56,9 +56,21 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
           >
             {item.productName}
           </Link>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            {formatPrice(item.price)} each
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {formatPrice(item.price)} each
+            </p>
+            {item.priceChanged && item.priceAtAddition && (
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-orange-600 dark:text-orange-400 line-through">
+                  {formatPrice(item.priceAtAddition)}
+                </span>
+                <span className="text-xs px-1.5 py-0.5 rounded bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 font-medium">
+                  Price changed
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Quantity Controls */}

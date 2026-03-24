@@ -50,8 +50,8 @@ const Home = () => {
   }, []);
 
   const formatPrice = (price) => {
-    if (price == null) return "$0.00";
-    return `$${Number(price).toFixed(2)}`;
+    if (price == null) return "LKR 0.00";
+    return `LKR ${Number(price).toFixed(2)}`;
   };
 
   const getImageUrl = (product) => {

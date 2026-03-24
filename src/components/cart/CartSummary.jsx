@@ -4,8 +4,8 @@ import Button from "../common/Button";
 
 const CartSummary = ({ cart, onCheckout }) => {
   const formatPrice = (price) => {
-    if (price == null) return "$0.00";
-    return `$${Number(price).toFixed(2)}`;
+    if (price == null) return "LKR 0.00";
+    return `LKR ${Number(price).toFixed(2)}`;
   };
 
   const subtotal = cart?.totalAmount || 0;
@@ -72,7 +72,7 @@ const CartSummary = ({ cart, onCheckout }) => {
             local_shipping
           </span>
           <p className="text-xs text-slate-600 dark:text-slate-400">
-            Free shipping on orders over $50
+            Free shipping on orders over LKR 5000
           </p>
         </div>
       </div>
