@@ -207,11 +207,10 @@ const ProductList = () => {
                       setCategoryId("");
                       setPage(0);
                     }}
-                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                      !categoryId
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${!categoryId
                         ? "bg-primary/10 font-semibold text-primary"
                         : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800"
-                    }`}
+                      }`}
                   >
                     All Categories
                   </button>
@@ -222,11 +221,10 @@ const ProductList = () => {
                         setCategoryId(String(cat.id));
                         setPage(0);
                       }}
-                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                        String(categoryId) === String(cat.id)
+                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${String(categoryId) === String(cat.id)
                           ? "bg-primary/10 font-semibold text-primary"
                           : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800"
-                      }`}
+                        }`}
                       style={{ paddingLeft: `${12 + cat.depth * 16}px` }}
                     >
                       {cat.depth > 0 && (
@@ -251,11 +249,10 @@ const ProductList = () => {
                       setBrandId("");
                       setPage(0);
                     }}
-                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                      !brandId
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${!brandId
                         ? "bg-primary/10 font-semibold text-primary"
                         : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800"
-                    }`}
+                      }`}
                   >
                     All Brands
                   </button>
@@ -266,11 +263,10 @@ const ProductList = () => {
                         setBrandId(String(brand.id));
                         setPage(0);
                       }}
-                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                        String(brandId) === String(brand.id)
+                      className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${String(brandId) === String(brand.id)
                           ? "bg-primary/10 font-semibold text-primary"
                           : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800"
-                      }`}
+                        }`}
                     >
                       {brand.name}
                     </button>
@@ -413,7 +409,7 @@ const ProductList = () => {
           {/* Products Grid */}
           {!loading && !error && products.length > 0 && (
             <>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

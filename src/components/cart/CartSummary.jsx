@@ -55,17 +55,6 @@ const CartSummary = ({ cart, onCheckout }) => {
       >
         Proceed to Checkout
       </Button>
-
-      <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-        <div className="flex items-start gap-2">
-          <span className="material-symbols-outlined text-sm text-primary">
-            local_shipping
-          </span>
-          <p className="text-xs text-slate-600 dark:text-slate-400">
-            Free shipping on orders over LKR 5000
-          </p>
-        </div>
-      </div>
     </Card>
   );
 };
