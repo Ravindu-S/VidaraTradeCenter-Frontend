@@ -1,28 +1,52 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "../common/Button";
+import { useToast } from "../../context/ToastContext";
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   const [quantity, setQuantity] = useState(item.quantity);
   const [isUpdating, setIsUpdating] = useState(false);
+  const { showError, showSuccess } = useToast();
 
   const formatPrice = (price) => {
     if (price == null) return "LKR 0.00";
     return `LKR ${Number(price).toFixed(2)}`;
   };
 
+  // Get available stock from item
+  const availableStock = item.stock !== undefined && item.stock !== null ? item.stock : null;
+  const hasStockData = availableStock !== null;
+  const isAtMaxStock = hasStockData && quantity >= availableStock;
+
   const handleQuantityChange = async (newQuantity) => {
     if (newQuantity < 1) return;
 
+    // Client-side validation: Check if exceeding stock
+    if (hasStockData && newQuantity > availableStock) {
+      showError(`Only ${availableStock} items available in stock`);
+      return;
+    }
+
     setQuantity(newQuantity);
     setIsUpdating(true);
-    await onUpdateQuantity(item.id, newQuantity);
+    const result = await onUpdateQuantity(item.id, newQuantity);
     setIsUpdating(false);
+
+    // Handle API errors
+    if (result && !result.success) {
+      // Revert quantity on error
+      setQuantity(item.quantity);
+      showError(result.error || "Failed to update quantity");
+    }
   };
 
   const handleRemove = async () => {
     setIsUpdating(true);
-    await onRemove(item.id);
+    const result = await onRemove(item.id);
+    if (result && !result.success) {
+      setIsUpdating(false);
+      showError(result.error || "Failed to remove item");
+    }
   };
 
   return (
@@ -71,6 +95,21 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
               </div>
             )}
           </div>
+
+          {/* Stock Availability */}
+          {hasStockData && (
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              {availableStock > 0 ? (
+                <span className={availableStock <= 10 ? "text-orange-600 dark:text-orange-400 font-medium" : ""}>
+                  {availableStock} available
+                </span>
+              ) : (
+                <span className="text-red-600 dark:text-red-400 font-medium">
+                  Out of stock
+                </span>
+              )}
+            </p>
+          )}
         </div>
 
         {/* Quantity Controls */}
@@ -88,8 +127,9 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
             </span>
             <button
               onClick={() => handleQuantityChange(quantity + 1)}
-              disabled={isUpdating}
+              disabled={isUpdating || isAtMaxStock}
               className="px-3 py-1 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              title={isAtMaxStock ? `Maximum ${availableStock} available` : "Increase quantity"}
             >
               <span className="material-symbols-outlined text-sm">add</span>
             </button>

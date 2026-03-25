@@ -39,11 +39,13 @@ const Cart = () => {
   const hasPriceChanges = cart?.items?.some(item => item.priceChanged) || false;
 
   const handleUpdateQuantity = async (cartItemId, quantity) => {
-    await updateCartItem(cartItemId, quantity);
+    const result = await updateCartItem(cartItemId, quantity);
+    return result; // Return result so CartItem can handle errors
   };
 
   const handleRemoveItem = async (cartItemId) => {
-    await removeCartItem(cartItemId);
+    const result = await removeCartItem(cartItemId);
+    return result; // Return result so CartItem can handle errors
   };
 
   const handleClearCart = async () => {
