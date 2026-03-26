@@ -55,8 +55,7 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
-    // TODO: Navigate to checkout page when implemented
-    alert("Checkout functionality coming soon!");
+    navigate("/checkout");
   };
 
   const handleSyncPrices = async () => {

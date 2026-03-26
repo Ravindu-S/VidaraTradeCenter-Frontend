@@ -16,6 +16,7 @@ const ProductDetailPage = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [buyingNow, setBuyingNow] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -68,6 +69,33 @@ const ProductDetailPage = () => {
       console.log("Added to cart successfully");
     } else {
       console.error("Failed to add to cart:", result.error);
+      alert(result.error || "Failed to add item to cart");
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    if (!product.stock || product.stock <= 0) {
+      alert("This product is out of stock");
+      return;
+    }
+
+    if (quantity > product.stock) {
+      alert(`Only ${product.stock} items available in stock`);
+      return;
+    }
+
+    setBuyingNow(true);
+    const result = await addToCart(product.id, quantity);
+    setBuyingNow(false);
+
+    if (result.success) {
+      navigate("/checkout");
+    } else {
       alert(result.error || "Failed to add item to cart");
     }
   };
@@ -341,29 +369,50 @@ const ProductDetailPage = () => {
               </div>
             )}
 
-            {/* Add to Cart Button */}
-            <button
-              onClick={handleAddToCart}
-              disabled={addingToCart || !product.stock || product.stock <= 0}
-              className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-primary px-8 text-base font-bold text-white transition-transform active:scale-95 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {addingToCart ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  Adding...
-                </>
-              ) : product.stock <= 0 ? (
-                <>
-                  <span className="material-symbols-outlined">block</span>
-                  Out of Stock
-                </>
-              ) : (
-                <>
-                  <span className="material-symbols-outlined">shopping_cart</span>
-                  Add to Cart
-                </>
-              )}
-            </button>
+            <div className="flex gap-3">
+              {/* Add to Cart Button */}
+              <button
+                onClick={handleAddToCart}
+                disabled={addingToCart || buyingNow || !product.stock || product.stock <= 0}
+                className="flex h-14 flex-1 items-center justify-center gap-3 rounded-xl border-2 border-primary bg-white px-6 text-base font-bold text-primary transition-transform active:scale-95 hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {addingToCart ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                    Adding...
+                  </>
+                ) : product.stock <= 0 ? (
+                  <>
+                    <span className="material-symbols-outlined">block</span>
+                    Out of Stock
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined">shopping_cart</span>
+                    Add to Cart
+                  </>
+                )}
+              </button>
+
+              {/* Buy Now Button */}
+              <button
+                onClick={handleBuyNow}
+                disabled={buyingNow || addingToCart || !product.stock || product.stock <= 0}
+                className="flex h-14 flex-1 items-center justify-center gap-3 rounded-xl bg-accent-gold px-6 text-base font-bold text-white transition-transform active:scale-95 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {buyingNow ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined">bolt</span>
+                    Buy Now
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Specifications */}

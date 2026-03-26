@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
@@ -17,8 +17,14 @@ import Products from "./pages/admin/Products";
 import ProductForm from "./pages/admin/ProductForm";
 import Categories from "./pages/admin/Categories";
 import Brands from "./pages/admin/Brands";
+import AdminOrders from "./pages/admin/Orders";
 import ProductList from "./pages/products/ProductList";
 import ProductDetailPage from "./pages/products/ProductDetailPage";
+import CheckoutPage from "./pages/checkout/CheckoutPage";
+import MyOrdersPage from "./pages/order/MyOrdersPage";
+import OrderConfirmationPage from "./pages/order/OrderConfirmationPage";
+import PaymentReturnPage from "./pages/payment/PaymentReturnPage";
+import PaymentCancelPage from "./pages/payment/PaymentCancelPage";
 function App() {
   return (
     <Routes>
@@ -34,6 +40,12 @@ function App() {
         <Route path="products/:id" element={<ProductDetailPage />} />
         {/* DEV 4: Shopping Cart */}
         <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+        {/* DEV 5: Checkout & Payment */}
+        <Route path="checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+        <Route path="orders" element={<ProtectedRoute><MyOrdersPage /></ProtectedRoute>} />
+        <Route path="order/confirmation" element={<ProtectedRoute><OrderConfirmationPage /></ProtectedRoute>} />
+        <Route path="payment/return" element={<ProtectedRoute><PaymentReturnPage /></ProtectedRoute>} />
+        <Route path="payment/cancel" element={<ProtectedRoute><PaymentCancelPage /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       {/* DEV 2: Admin Panel */}
@@ -45,6 +57,7 @@ function App() {
         <Route path="products/:id/edit" element={<ProductForm />} />
         <Route path="categories" element={<Categories />} />
         <Route path="brands" element={<Brands />} />
+        <Route path="orders" element={<AdminOrders />} />
       </Route>
     </Routes>
   );
