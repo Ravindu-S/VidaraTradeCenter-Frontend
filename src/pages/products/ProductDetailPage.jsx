@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { getProductById } from "../../api/productApi";
+import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 import Loader from "../../components/common/Loader";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -32,8 +39,46 @@ const ProductDetailPage = () => {
   }, [id]);
 
   const formatPrice = (price) => {
-    if (price == null) return "$0.00";
-    return `$${Number(price).toFixed(2)}`;
+    if (price == null) return "LKR 0.00";
+    return `LKR ${Number(price).toFixed(2)}`;
+  };
+
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    // Check stock availability
+    if (!product.stock || product.stock <= 0) {
+      alert("This product is out of stock");
+      return;
+    }
+
+    if (quantity > product.stock) {
+      alert(`Only ${product.stock} items available in stock`);
+      return;
+    }
+
+    setAddingToCart(true);
+    const result = await addToCart(product.id, quantity);
+    setAddingToCart(false);
+
+    if (result.success) {
+      console.log("Added to cart successfully");
+    } else {
+      console.error("Failed to add to cart:", result.error);
+      alert(result.error || "Failed to add item to cart");
+    }
+  };
+
+  const handleQuantityChange = (delta) => {
+    const newQuantity = quantity + delta;
+    const maxStock = product?.stock || 0;
+
+    if (newQuantity >= 1 && newQuantity <= maxStock) {
+      setQuantity(newQuantity);
+    }
   };
 
   if (loading) {
@@ -125,11 +170,10 @@ const ProductDetailPage = () => {
                 <button
                   key={img.id || i}
                   onClick={() => setSelectedImage(i)}
-                  className={`h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-colors ${
-                    i === selectedImage
-                      ? "border-primary"
-                      : "border-transparent hover:border-slate-300"
-                  }`}
+                  className={`h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-colors ${i === selectedImage
+                    ? "border-primary"
+                    : "border-transparent hover:border-slate-300"
+                    }`}
                 >
                   <img
                     src={img.imageUrl}
@@ -169,6 +213,30 @@ const ProductDetailPage = () => {
           {/* SKU */}
           <p className="mt-1 text-xs text-slate-400">SKU: {product.sku}</p>
 
+          {/* Stock Status */}
+          <div className="mt-2 flex items-center gap-2">
+            {product.stock > 0 ? (
+              <>
+                {product.stock <= (product.lowStockThreshold || 10) ? (
+                  <span className="flex items-center gap-1 text-sm text-orange-600 dark:text-orange-400">
+                    <span className="material-symbols-outlined text-sm">warning</span>
+                    Only {product.stock} left in stock
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+                    <span className="material-symbols-outlined text-sm">check_circle</span>
+                    In Stock ({product.stock} available)
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="flex items-center gap-1 text-sm text-red-600 dark:text-red-400">
+                <span className="material-symbols-outlined text-sm">cancel</span>
+                Out of Stock
+              </span>
+            )}
+          </div>
+
           {/* Price */}
           <div className="mt-4 flex items-baseline gap-3">
             <span className="text-3xl font-bold text-primary dark:text-white">
@@ -186,7 +254,7 @@ const ProductDetailPage = () => {
                 {Math.round(
                   ((product.basePrice - product.salePrice) /
                     product.basePrice) *
-                    100
+                  100
                 )}
                 % OFF
               </span>
@@ -240,11 +308,63 @@ const ProductDetailPage = () => {
             </div>
           )}
 
-          {/* Add to Cart */}
-          <button className="mt-8 flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-primary px-8 text-base font-bold text-white transition-transform active:scale-95 hover:shadow-lg">
-            <span className="material-symbols-outlined">shopping_cart</span>
-            Add to Cart
-          </button>
+          {/* Quantity & Add to Cart */}
+          <div className="mt-8 space-y-4">
+            {/* Quantity Selector */}
+            {product.stock > 0 && (
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Quantity:
+                </span>
+                <div className="flex items-center border-2 border-slate-200 dark:border-slate-700 rounded-lg">
+                  <button
+                    onClick={() => handleQuantityChange(-1)}
+                    disabled={quantity <= 1}
+                    className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm">remove</span>
+                  </button>
+                  <span className="px-6 py-2 text-base font-medium text-slate-900 dark:text-white min-w-[60px] text-center">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => handleQuantityChange(1)}
+                    disabled={quantity >= product.stock}
+                    className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm">add</span>
+                  </button>
+                </div>
+                <span className="text-xs text-slate-500 dark:text-slate-400">
+                  Max: {product.stock}
+                </span>
+              </div>
+            )}
+
+            {/* Add to Cart Button */}
+            <button
+              onClick={handleAddToCart}
+              disabled={addingToCart || !product.stock || product.stock <= 0}
+              className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-primary px-8 text-base font-bold text-white transition-transform active:scale-95 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {addingToCart ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  Adding...
+                </>
+              ) : product.stock <= 0 ? (
+                <>
+                  <span className="material-symbols-outlined">block</span>
+                  Out of Stock
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined">shopping_cart</span>
+                  Add to Cart
+                </>
+              )}
+            </button>
+          </div>
 
           {/* Specifications */}
           {product.specifications?.length > 0 && (

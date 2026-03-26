@@ -6,6 +6,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Profile from "./pages/profile/Profile";
 import Addresses from "./pages/profile/Addresses";
+import Cart from "./pages/cart/Cart";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import AdminRoute from "./components/admin/AdminRoute";
@@ -31,6 +32,8 @@ function App() {
         {/* DEV 3: Product Catalog */}
         <Route path="products" element={<ProductList />} />
         <Route path="products/:id" element={<ProductDetailPage />} />
+        {/* DEV 4: Shopping Cart */}
+        <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       {/* DEV 2: Admin Panel */}

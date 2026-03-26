@@ -1,9 +1,7 @@
-// Format price to currency
+// Format price to currency (LKR - Sri Lankan Rupees)
 export const formatPrice = (price) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(price);
+  if (price == null) return "LKR 0.00";
+  return `LKR ${Number(price).toFixed(2)}`;
 };
 
 // Format date to readable format

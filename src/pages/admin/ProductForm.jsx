@@ -30,6 +30,8 @@ const ProductForm = () => {
     status: "DRAFT",
     weight: "",
     dimensions: "",
+    stock: "",
+    lowStockThreshold: "",
     tags: "",
     imageUrls: "",
   });
@@ -66,6 +68,8 @@ const ProductForm = () => {
           status: product.status || "DRAFT",
           weight: product.weight ?? "",
           dimensions: product.dimensions || "",
+          stock: product.stock ?? "",
+          lowStockThreshold: product.lowStockThreshold ?? "",
           tags: product.tags ? product.tags.join(", ") : "",
           imageUrls: product.images
             ? product.images.map((img) => img.imageUrl).join("\n")
@@ -136,6 +140,8 @@ const ProductForm = () => {
         status: form.status,
         weight: form.weight ? Number(form.weight) : null,
         dimensions: form.dimensions.trim() || null,
+        stock: form.stock ? Number(form.stock) : 0,
+        lowStockThreshold: form.lowStockThreshold ? Number(form.lowStockThreshold) : 10,
         tags: form.tags
           ? form.tags.split(",").map((t) => t.trim()).filter(Boolean)
           : [],
@@ -437,6 +443,41 @@ const ProductForm = () => {
                     placeholder="e.g., 30x20x10 cm"
                     className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Inventory */}
+            <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">Inventory</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Stock Quantity <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="stock"
+                    value={form.stock}
+                    onChange={handleChange}
+                    min="0"
+                    placeholder="0"
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Available quantity in stock</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Low Stock Threshold</label>
+                  <input
+                    type="number"
+                    name="lowStockThreshold"
+                    value={form.lowStockThreshold}
+                    onChange={handleChange}
+                    min="0"
+                    placeholder="10"
+                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Alert when stock falls below this number</p>
                 </div>
               </div>
             </div>

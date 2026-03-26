@@ -7,13 +7,13 @@ const Toast = () => {
   const getToastStyles = (type) => {
     switch (type) {
       case 'success':
-        return 'bg-success text-white';
+        return 'bg-green-500 text-white';
       case 'error':
-        return 'bg-error text-white';
+        return 'bg-orange-500 text-white';
       case 'warning':
-        return 'bg-warning text-white';
+        return 'bg-yellow-500 text-white';
       case 'info':
-        return 'bg-info text-white';
+        return 'bg-blue-500 text-white';
       default:
         return 'bg-slate-800 text-white';
     }
