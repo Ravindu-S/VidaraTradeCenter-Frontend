@@ -1,4 +1,4 @@
-﻿import API from "./axios";
+import API from "./axios";
 // ==================== DASHBOARD ====================
 // GET /api/admin/dashboard/stats
 export const getDashboardStats = () => {
@@ -54,3 +54,16 @@ export const getAdminBrand = (id) => API.get(`/brands/${id}`);
 export const createAdminBrand = (data) => API.post("/brands", data);
 export const updateAdminBrand = (id, data) => API.put(`/brands/${id}`, data);
 export const deleteAdminBrand = (id) => API.delete(`/brands/${id}`);
+// ==================== ORDERS ====================
+export const getAdminOrders = (params = {}) => {
+  return API.get("/admin/orders", { params });
+};
+export const getAdminOrderStats = () => {
+  return API.get("/admin/orders/statistics");
+};
+export const getAdminOrderById = (id) => {
+  return API.get(`/admin/orders/${id}`);
+};
+export const updateAdminOrderStatus = (id, newStatus) => {
+  return API.put(`/admin/orders/${id}/status`, { newStatus });
+};

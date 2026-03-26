@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getDashboardStats } from "../../api/adminApi";
 import { useToast } from "../../context/ToastContext";
@@ -92,7 +92,7 @@ const Dashboard = () => {
       color: "bg-rose-500",
       bgLight: "bg-rose-50",
       textColor: "text-rose-600",
-      comingSoon: true,
+      link: "/admin/orders",
     },
     {
       title: "Revenue",
@@ -105,7 +105,7 @@ const Dashboard = () => {
       color: "bg-teal-500",
       bgLight: "bg-teal-50",
       textColor: "text-teal-600",
-      comingSoon: true,
+      link: "/admin/orders",
     },
   ];
   return (
