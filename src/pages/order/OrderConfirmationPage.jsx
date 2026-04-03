@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Loader from "../../components/common/Loader";
 import { getOrderByNumber } from "../../api/orderApi";
 
@@ -40,15 +40,27 @@ const statusLabel = (status) => {
 
 const OrderConfirmationPage = () => {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const orderNumber = params.get("order");
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const pollRef = useRef(null);
+  const redirectRef = useRef(null);
   const attemptRef = useRef(0);
 
   useEffect(() => {
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+    if (redirectRef.current) {
+      clearTimeout(redirectRef.current);
+      redirectRef.current = null;
+    }
+    attemptRef.current = 0;
+
     if (!orderNumber) {
       setError("No order number provided");
       setLoading(false);
@@ -62,7 +74,16 @@ const OrderConfirmationPage = () => {
         setOrder(data);
         return data;
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to load order details");
+        const status = err.response?.status;
+        if (status === 403) {
+          setError("You cannot view this order. Redirecting to My Orders...");
+          redirectRef.current = setTimeout(() => navigate("/orders"), 2000);
+        } else if (status === 404) {
+          setError("Order not found. Redirecting to My Orders...");
+          redirectRef.current = setTimeout(() => navigate("/orders"), 2000);
+        } else {
+          setError(err.response?.data?.message || "Failed to load order details");
+        }
         return null;
       } finally {
         setLoading(false);
@@ -70,7 +91,7 @@ const OrderConfirmationPage = () => {
     };
 
     fetchOrder().then((data) => {
-      if (data && data.paymentStatus === "PENDING") {
+      if (data?.paymentStatus === "PENDING") {
         pollRef.current = setInterval(async () => {
           attemptRef.current += 1;
           try {
@@ -79,18 +100,39 @@ const OrderConfirmationPage = () => {
             setOrder(updated);
             if (updated.paymentStatus !== "PENDING" || attemptRef.current >= 10) {
               clearInterval(pollRef.current);
+              pollRef.current = null;
             }
-          } catch {
+          } catch (err) {
+            const status = err.response?.status;
             clearInterval(pollRef.current);
+            pollRef.current = null;
+            if (status === 403) {
+              setError("You cannot view this order. Redirecting to My Orders...");
+              if (!redirectRef.current) {
+                redirectRef.current = setTimeout(() => navigate("/orders"), 2000);
+              }
+            } else if (status === 404) {
+              setError("Order not found. Redirecting to My Orders...");
+              if (!redirectRef.current) {
+                redirectRef.current = setTimeout(() => navigate("/orders"), 2000);
+              }
+            }
           }
         }, 3000);
       }
     });
 
     return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+      if (redirectRef.current) {
+        clearTimeout(redirectRef.current);
+        redirectRef.current = null;
+      }
     };
-  }, [orderNumber]);
+  }, [navigate, orderNumber]);
 
   if (loading) {
     return (
