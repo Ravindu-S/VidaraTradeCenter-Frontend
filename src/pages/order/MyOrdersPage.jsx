@@ -123,7 +123,7 @@ const MyOrdersPage = () => {
           <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
             <span className="material-symbols-outlined text-4xl text-slate-400">receipt_long</span>
           </div>
-          <p className="text-lg font-semibold text-slate-900">No orders yet</p>
+          <p className="text-lg font-semibold text-slate-900">You have not placed any orders yet</p>
           <p className="mt-2 text-sm text-slate-500">
             When you place an order, it will appear here.
           </p>
