@@ -67,3 +67,51 @@ export const getAdminOrderById = (id) => {
 export const updateAdminOrderStatus = (id, newStatus) => {
   return API.put(`/admin/orders/${id}/status`, { newStatus });
 };
+
+// POST /api/admin/orders/:id/refund - Process refund
+export const processRefund = (orderId, refundData) => {
+  return API.post(`/admin/orders/${orderId}/refund`, refundData);
+};
+
+// POST /api/admin/orders/:id/delivery-tracking - Create delivery tracking
+export const createDeliveryTracking = (orderId, trackingData) => {
+  const params = new URLSearchParams();
+  if (trackingData.trackingNumber) params.append("trackingNumber", trackingData.trackingNumber);
+  if (trackingData.courierName) params.append("courierName", trackingData.courierName);
+  if (trackingData.estimatedDeliveryDate) params.append("estimatedDeliveryDate", trackingData.estimatedDeliveryDate);
+  
+  return API.post(`/admin/orders/${orderId}/delivery-tracking?${params.toString()}`);
+};
+
+// PUT /api/admin/orders/:id/delivery-status - Update delivery status
+export const updateDeliveryStatus = (orderId, status, notes = "") => {
+  const params = new URLSearchParams({ status });
+  if (notes) params.append("notes", notes);
+  
+  return API.put(`/admin/orders/${orderId}/delivery-status?${params.toString()}`);
+};
+
+// PUT /api/admin/orders/:id/tracking-info - Update tracking info
+export const updateTrackingInfo = (orderId, trackingData) => {
+  const params = new URLSearchParams();
+  if (trackingData.trackingNumber) params.append("trackingNumber", trackingData.trackingNumber);
+  if (trackingData.courierName) params.append("courierName", trackingData.courierName);
+  if (trackingData.estimatedDeliveryDate) params.append("estimatedDeliveryDate", trackingData.estimatedDeliveryDate);
+  
+  return API.put(`/admin/orders/${orderId}/tracking-info?${params.toString()}`);
+};
+
+// GET /api/admin/orders/:id/delivery-tracking - Get delivery tracking
+export const getAdminDeliveryTracking = (orderId) => {
+  return API.get(`/admin/orders/${orderId}/delivery-tracking`);
+};
+
+// GET /api/admin/orders/deliveries/overdue - Get overdue deliveries
+export const getOverdueDeliveries = () => {
+  return API.get("/admin/orders/deliveries/overdue");
+};
+
+// GET /api/admin/orders/deliveries/status/:status - Get deliveries by status
+export const getDeliveriesByStatus = (status) => {
+  return API.get(`/admin/orders/deliveries/status/${status}`);
+};

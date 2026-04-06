@@ -25,6 +25,7 @@ import MyOrdersPage from "./pages/order/MyOrdersPage";
 import OrderConfirmationPage from "./pages/order/OrderConfirmationPage";
 import PaymentReturnPage from "./pages/payment/PaymentReturnPage";
 import PaymentCancelPage from "./pages/payment/PaymentCancelPage";
+import DeliveryManagement from "./pages/admin/DeliveryManagement";
 function App() {
   return (
     <Routes>
@@ -58,6 +59,7 @@ function App() {
         <Route path="categories" element={<Categories />} />
         <Route path="brands" element={<Brands />} />
         <Route path="orders" element={<AdminOrders />} />
+        <Route path="deliveries" element={<DeliveryManagement />} />
       </Route>
     </Routes>
   );
