@@ -42,6 +42,11 @@ const paymentLabel = (status) => {
   }
 };
 
+const normalizeStatusText = (status, fallback = "") => {
+  const value = typeof status === "string" ? status.trim() : "";
+  return value || fallback;
+};
+
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -136,53 +141,61 @@ const MyOrdersPage = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          {orders.map((order) => (
-            <Link
-              key={order.id}
-              to={`/order/confirmation?order=${order.orderNumber}`}
-              className="block rounded-2xl bg-white p-6 shadow-sm border border-gray-100 transition-shadow hover:shadow-md"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <span className="material-symbols-outlined">receipt_long</span>
+          {orders.map((order) => {
+            const orderStatusText = normalizeStatusText(order.orderStatus);
+            const paymentStatusRaw = normalizeStatusText(order.paymentStatus, "PENDING");
+            const paymentStatusText = normalizeStatusText(paymentLabel(paymentStatusRaw), "Pending");
+
+            return (
+              <Link
+                key={order.id}
+                to={`/order/confirmation?order=${order.orderNumber}`}
+                className="block rounded-2xl bg-white p-6 shadow-sm border border-gray-100 transition-shadow hover:shadow-md"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <span className="material-symbols-outlined">receipt_long</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{order.orderNumber}</p>
+                      {order.orderDate && (
+                        <p className="mt-0.5 text-xs text-slate-500">
+                          {new Date(order.orderDate).toLocaleDateString("en-LK", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{order.orderNumber}</p>
-                    {order.orderDate && (
-                      <p className="mt-0.5 text-xs text-slate-500">
-                        {new Date(order.orderDate).toLocaleDateString("en-LK", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
+
+                  <div className="flex items-center gap-3">
+                    {orderStatusText && (
+                      <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(orderStatusText)}`}>
+                        {orderStatusText}
+                      </span>
                     )}
+                    <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(paymentStatusRaw)}`}>
+                      {paymentStatusText}
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.orderStatus)}`}>
-                    {order.orderStatus}
-                  </span>
-                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.paymentStatus)}`}>
-                    {paymentLabel(order.paymentStatus)}
-                  </span>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-4">
+                  <p className="text-sm text-slate-600">
+                    {order.itemCount} {order.itemCount === 1 ? "item" : "items"}
+                  </p>
+                  <p className="text-base font-bold text-primary">
+                    {formatPrice(order.totalAmount)}
+                  </p>
                 </div>
-              </div>
-
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-4">
-                <p className="text-sm text-slate-600">
-                  {order.itemCount} {order.itemCount === 1 ? "item" : "items"}
-                </p>
-                <p className="text-base font-bold text-primary">
-                  {formatPrice(order.totalAmount)}
-                </p>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
 
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 pt-4">

@@ -38,6 +38,11 @@ const statusLabel = (status) => {
   }
 };
 
+const normalizeStatusText = (status, fallback = "") => {
+  const value = typeof status === "string" ? status.trim() : "";
+  return value || fallback;
+};
+
 const OrderConfirmationPage = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -164,6 +169,9 @@ const OrderConfirmationPage = () => {
   }
 
   const paid = order.paymentStatus === "COMPLETED" || order.orderStatus === "PAID";
+  const orderStatusText = normalizeStatusText(order.orderStatus);
+  const paymentStatusRaw = normalizeStatusText(order.paymentStatus, "PENDING");
+  const paymentStatusText = normalizeStatusText(statusLabel(paymentStatusRaw), "Pending");
   const addr = order.shippingAddress;
 
   return (
@@ -215,11 +223,13 @@ const OrderConfirmationPage = () => {
                 <p className="mt-1 text-xl font-bold text-primary">{order.orderNumber}</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.orderStatus)}`}>
-                  {order.orderStatus}
-                </span>
-                <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.paymentStatus)}`}>
-                  {statusLabel(order.paymentStatus)}
+                {orderStatusText && (
+                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(orderStatusText)}`}>
+                    {orderStatusText}
+                  </span>
+                )}
+                <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(paymentStatusRaw)}`}>
+                  {paymentStatusText}
                 </span>
               </div>
             </div>
