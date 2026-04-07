@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { getAdminOrders, getAdminOrderStats, getAdminOrderById, updateAdminOrderStatus } from "../../api/adminApi";
 import { useToast } from "../../context/ToastContext";
 import RefundModal from "../../components/order/RefundModal";
-import { processRefund } from "../../api/adminApi";
 
 const formatPrice = (v) => (v != null ? `LKR ${Number(v).toFixed(2)}` : "LKR 0.00");
 

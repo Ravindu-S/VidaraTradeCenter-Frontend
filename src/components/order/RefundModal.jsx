@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { processRefund } from "../../api/orderApi";
+import { processRefund } from "../../api/adminApi";
 import { useToast } from "../../context/ToastContext";
 import { formatPrice } from "../../utils/formatters";
 
