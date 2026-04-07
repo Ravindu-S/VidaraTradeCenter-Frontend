@@ -154,6 +154,14 @@ const OrderConfirmationPage = () => {
                 ? "Your payment has been received and your order is being processed."
                 : "We're confirming your payment with PayHere. This usually takes a few seconds..."}
             </p>
+            {paid && (
+              <div className="mt-3 flex items-start gap-2 rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-700">
+                <span className="material-symbols-outlined mt-0.5 shrink-0 text-sm">mail</span>
+                <span>
+                  We send order updates to the email on your account. Check your inbox and spam folder — it can take a minute.
+                </span>
+              </div>
+            )}
             {!paid && order.paymentStatus === "PENDING" && (
               <div className="mt-3 flex items-center gap-2 text-xs text-amber-600">
                 <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-amber-400 border-t-transparent"></span>
@@ -173,12 +181,24 @@ const OrderConfirmationPage = () => {
                 <p className="mt-1 text-xl font-bold text-primary">{order.orderNumber}</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.orderStatus)}`}>
-                  {order.orderStatus}
-                </span>
-                <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.paymentStatus)}`}>
-                  {statusLabel(order.paymentStatus)}
-                </span>
+                {order.orderStatus === "PENDING" && order.paymentStatus === "PENDING" ? (
+                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor("PENDING")}`}>
+                    Pending
+                  </span>
+                ) : order.orderStatus === "PAID" && order.paymentStatus === "COMPLETED" ? (
+                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor("COMPLETED")}`}>
+                    Paid
+                  </span>
+                ) : (
+                  <>
+                    <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.orderStatus)}`}>
+                      {order.orderStatus}
+                    </span>
+                    <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.paymentStatus)}`}>
+                      {statusLabel(order.paymentStatus)}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
             {order.orderDate && (
