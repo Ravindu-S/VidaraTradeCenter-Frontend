@@ -5,7 +5,7 @@ import RefundModal from "../../components/order/RefundModal";
 
 const formatPrice = (v) => (v != null ? `LKR ${Number(v).toFixed(2)}` : "LKR 0.00");
 
-const ORDER_STATUSES = ["PENDING", "PAID", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
+const ORDER_STATUSES = ["PENDING", "PAID", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"];
 const PAYMENT_STATUSES = ["PENDING", "COMPLETED", "FAILED", "REFUNDED"];
 
 const statusColors = {
@@ -21,12 +21,19 @@ const statusColors = {
 };
 
 const TRANSITIONS = {
+  // Keep paid action
   PENDING: ["PAID", "CANCELLED"],
-  PAID: ["PROCESSING", "CANCELLED"],
-  PROCESSING: ["SHIPPED", "CANCELLED"],
-  SHIPPED: ["DELIVERED", "CANCELLED"],
+
+  // Remove delivery progression actions from Orders page
+  // (no PROCESSING / SHIPPED / DELIVERED buttons here)
+  PAID: ["CANCELLED"],
+  PROCESSING: ["CANCELLED"],
+  SHIPPED: ["CANCELLED"],
+
+  // Terminal states
   DELIVERED: [],
   CANCELLED: [],
+  REFUNDED: [],
 };
 
 const transitionButtonStyle = {
