@@ -35,7 +35,13 @@ const DeliveryManagement = () => {
         try {
           const res = await getAdminDeliveryTracking(order.id);
           const tracking = res.data?.data || res.data;
-          return [order.id, tracking];
+
+            // If backend returns "not started", id will be null -> treat as no tracking
+            if (!tracking?.id) {
+              return [order.id, null];
+            }
+
+            return [order.id, tracking];
         } catch (err) {
           return [order.id, null];
         }
@@ -252,7 +258,7 @@ const DeliveryManagement = () => {
           <div className="divide-y divide-gray-200">
             {(activeTab === "all" ? allShipments : overdueOrders).map((item) => {
               const tracking = item.deliveryTracking || null;
-              const hasTracking = !!tracking;
+              const hasTracking = !!tracking && !!tracking.id;
 
               return (
                 <div key={item.id || item.orderNumber} className="p-6 hover:bg-gray-50">
