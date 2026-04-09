@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { getAdminOrders, getAdminOrderStats, getAdminOrderById, updateAdminOrderStatus } from "../../api/adminApi";
 import { useToast } from "../../context/ToastContext";
+import RefundModal from "../../components/order/RefundModal";
 
 const formatPrice = (v) => (v != null ? `LKR ${Number(v).toFixed(2)}` : "LKR 0.00");
 
-const ORDER_STATUSES = ["PENDING", "PAID", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
+const ORDER_STATUSES = ["PENDING", "PAID", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"];
 const PAYMENT_STATUSES = ["PENDING", "COMPLETED", "FAILED", "REFUNDED"];
 
 const statusColors = {
@@ -20,12 +21,19 @@ const statusColors = {
 };
 
 const TRANSITIONS = {
+  // Keep paid action
   PENDING: ["PAID", "CANCELLED"],
-  PAID: ["PROCESSING", "CANCELLED"],
-  PROCESSING: ["SHIPPED", "CANCELLED"],
-  SHIPPED: ["DELIVERED", "CANCELLED"],
+
+  // Remove delivery progression actions from Orders page
+  // (no PROCESSING / SHIPPED / DELIVERED buttons here)
+  PAID: ["CANCELLED"],
+  PROCESSING: ["CANCELLED"],
+  SHIPPED: ["CANCELLED"],
+
+  // Terminal states
   DELIVERED: [],
   CANCELLED: [],
+  REFUNDED: [],
 };
 
 const transitionButtonStyle = {
@@ -56,6 +64,10 @@ const Orders = () => {
   const [expandedId, setExpandedId] = useState(null);
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [refundModal, setRefundModal] = useState({
+    isOpen: false,
+    order: null,
+  });
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -147,6 +159,20 @@ const Orders = () => {
   const SortIcon = ({ field }) => {
     if (sortBy !== field) return <span className="text-gray-300 ml-1">&#8645;</span>;
     return <span className="text-indigo-600 ml-1">{sortDir === "asc" ? "\u2191" : "\u2193"}</span>;
+  };
+
+  const handleRefundClick = (order) => {
+    if (!["PAID", "PROCESSING", "DELIVERED"].includes(order.orderStatus)) {
+      showError("This order cannot be refunded");
+      return;
+    }
+    setRefundModal({ isOpen: true, order });
+  };
+
+  const handleRefundSuccess = () => {
+    setRefundModal({ isOpen: false, order: null });
+    fetchOrders();
+    fetchStats();
   };
 
   return (
@@ -341,6 +367,14 @@ const Orders = () => {
                                 {t === "CANCELLED" ? "Cancel" : t.charAt(0) + t.slice(1).toLowerCase()}
                               </button>
                             ))}
+                            {["PAID", "PROCESSING", "DELIVERED"].includes(order.orderStatus) && (
+                              <button
+                                onClick={() => handleRefundClick(order)}
+                                className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
+                              >
+                                Refund
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -410,6 +444,12 @@ const Orders = () => {
           </div>
         )}
       </div>
+      <RefundModal
+        isOpen={refundModal.isOpen}
+        onClose={() => setRefundModal({ isOpen: false, order: null })}
+        order={refundModal.order}
+        onRefundSuccess={handleRefundSuccess}
+      />
     </div>
   );
 };
