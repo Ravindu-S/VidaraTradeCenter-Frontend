@@ -164,12 +164,24 @@ const MyOrdersPage = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.orderStatus)}`}>
-                    {order.orderStatus}
-                  </span>
-                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.paymentStatus)}`}>
-                    {paymentLabel(order.paymentStatus)}
-                  </span>
+                  {order.orderStatus === "PENDING" && order.paymentStatus === "PENDING" ? (
+                    <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor("PENDING")}`}>
+                      Pending
+                    </span>
+                  ) : order.orderStatus === "PAID" && order.paymentStatus === "COMPLETED" ? (
+                    <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor("COMPLETED")}`}>
+                      Paid
+                    </span>
+                  ) : (
+                    <>
+                      <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.orderStatus)}`}>
+                        {order.orderStatus}
+                      </span>
+                      <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.paymentStatus)}`}>
+                        {paymentLabel(order.paymentStatus)}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
 
