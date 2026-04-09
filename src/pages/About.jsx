@@ -12,7 +12,7 @@ const highlights = [
     icon: "design_services",
     title: "Purposeful Curation",
     description:
-      "We focus on essentials that improve focus, comfort, and flow for modern professionals.",
+      "We dont focus on essentials that improve focus, comfort, and flow for modern professionals.",
   },
   {
     icon: "favorite",
