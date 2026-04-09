@@ -24,16 +24,18 @@ const formatDateTimeLK = (dateString) => {
 
 const formatDateLK = (dateString) => {
   if (!dateString) return null;
-  // Works for both "YYYY-MM-DD" and ISO timestamps
   const d = new Date(dateString);
   return d.toLocaleDateString("en-LK", { year: "numeric", month: "short", day: "numeric" });
 };
 
+/** Covers order + payment status badges (merged from both branches). */
 const statusColor = (status) => {
   switch (status) {
-    // Order statuses
     case "PAID":
+    case "COMPLETED":
       return "bg-green-50 text-green-700 border-green-200";
+    case "PENDING":
+      return "bg-amber-50 text-amber-700 border-amber-200";
     case "PROCESSING":
       return "bg-blue-50 text-blue-700 border-blue-200";
     case "SHIPPED":
@@ -41,18 +43,10 @@ const statusColor = (status) => {
     case "DELIVERED":
       return "bg-emerald-50 text-emerald-700 border-emerald-200";
     case "CANCELLED":
+    case "FAILED":
       return "bg-red-50 text-red-700 border-red-200";
     case "REFUNDED":
       return "bg-purple-50 text-purple-700 border-purple-200";
-
-    // Payment statuses
-    case "COMPLETED":
-      return "bg-green-50 text-green-700 border-green-200";
-    case "PENDING":
-      return "bg-amber-50 text-amber-700 border-amber-200";
-    case "FAILED":
-      return "bg-red-50 text-red-700 border-red-200";
-
     default:
       return "bg-slate-50 text-slate-700 border-slate-200";
   }
@@ -97,9 +91,6 @@ const OrderConfirmationPage = () => {
     try {
       const res = await getDeliveryStatus(ordNo);
       const data = res.data?.data || res.data;
-
-      // Important: "not started" responses may exist without a DB row.
-      // In your backend, that typically comes without an id.
       setDelivery(data);
     } catch (err) {
       setDeliveryError(err.response?.data?.message || "Failed to load delivery tracking");
@@ -131,10 +122,8 @@ const OrderConfirmationPage = () => {
     };
 
     fetchOrder().then((data) => {
-      // Always attempt to fetch delivery tracking (non-blocking)
       fetchDelivery(orderNumber);
 
-      // Existing payment polling logic (unchanged)
       if (data && data.paymentStatus === "PENDING") {
         pollRef.current = setInterval(async () => {
           attemptRef.current += 1;
@@ -195,8 +184,7 @@ const OrderConfirmationPage = () => {
 
   const addr = order.shippingAddress;
 
-  // Delivery details (safe defaults)
-  const trackingExists = !!delivery?.id; // real DB record
+  const trackingExists = !!delivery?.id;
   const deliveryStatus = delivery?.status || "PREPARING";
 
   const estimatedDateText = delivery?.estimatedDeliveryDate ? formatDateLK(delivery.estimatedDeliveryDate) : null;
@@ -218,7 +206,6 @@ const OrderConfirmationPage = () => {
         </nav>
       </div>
 
-      {/* Payment / Order state banner */}
       <div className="mb-8 rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
         <div className="flex items-start gap-4">
           <div
@@ -240,6 +227,16 @@ const OrderConfirmationPage = () => {
                 : "We're confirming your payment with PayHere. This usually takes a few seconds..."}
             </p>
 
+            {isPaidLike && !isCancelled && !isRefunded && (
+              <div className="mt-3 flex items-start gap-2 rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-700">
+                <span className="material-symbols-outlined mt-0.5 shrink-0 text-sm">mail</span>
+                <span>
+                  We send order updates to the email on your account. Check your inbox and spam folder — it can
+                  take a minute.
+                </span>
+              </div>
+            )}
+
             {!isPaidLike && order.paymentStatus === "PENDING" && (
               <div className="mt-3 flex items-center gap-2 text-xs text-amber-600">
                 <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-amber-400 border-t-transparent"></span>
@@ -260,9 +257,7 @@ const OrderConfirmationPage = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Order info */}
           <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
@@ -270,12 +265,28 @@ const OrderConfirmationPage = () => {
                 <p className="mt-1 text-xl font-bold text-primary">{order.orderNumber}</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.orderStatus)}`}>
-                  {order.orderStatus}
-                </span>
-                <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.paymentStatus)}`}>
-                  {statusLabel(order.paymentStatus)}
-                </span>
+                {order.orderStatus === "PENDING" && order.paymentStatus === "PENDING" ? (
+                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor("PENDING")}`}>
+                    Pending
+                  </span>
+                ) : order.orderStatus === "PAID" && order.paymentStatus === "COMPLETED" ? (
+                  <span className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor("COMPLETED")}`}>
+                    Paid
+                  </span>
+                ) : (
+                  <>
+                    <span
+                      className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.orderStatus)}`}
+                    >
+                      {order.orderStatus}
+                    </span>
+                    <span
+                      className={`rounded-full border px-3 py-1 text-xs font-bold ${statusColor(order.paymentStatus)}`}
+                    >
+                      {statusLabel(order.paymentStatus)}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -284,13 +295,10 @@ const OrderConfirmationPage = () => {
             )}
           </div>
 
-          {/* ✅ Delivery Tracking (NEW) */}
           <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">
-                  Delivery Tracking
-                </h2>
+                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">Delivery Tracking</h2>
                 <p className="mt-1 text-sm text-slate-600">
                   Track your delivery status and estimated delivery date.
                 </p>
@@ -306,7 +314,6 @@ const OrderConfirmationPage = () => {
               </button>
             </div>
 
-            {/* Loading / error */}
             {deliveryLoading ? (
               <div className="mt-6 flex items-center gap-3 text-sm text-slate-600">
                 <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-transparent"></span>
@@ -338,7 +345,6 @@ const OrderConfirmationPage = () => {
                   )}
                 </div>
 
-                {/* Tracking details */}
                 <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                     <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Courier</p>
@@ -355,7 +361,6 @@ const OrderConfirmationPage = () => {
                   </div>
                 </div>
 
-                {/* Progress tracker */}
                 <div className="mt-5">
                   <DeliveryTracker
                     status={deliveryStatus}
@@ -366,7 +371,6 @@ const OrderConfirmationPage = () => {
                   />
                 </div>
 
-                {/* Notes */}
                 {trackingExists && delivery?.notes && (
                   <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
                     <div className="flex items-start gap-2">
@@ -379,18 +383,16 @@ const OrderConfirmationPage = () => {
                   </div>
                 )}
 
-                {/* Not started message (no DB row) */}
                 {!trackingExists && (
                   <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                    Tracking is not available yet. Once your order is packed and handed over to a courier,
-                    you will see the tracking number and delivery progress here.
+                    Tracking is not available yet. Once your order is packed and handed over to a courier, you will
+                    see the tracking number and delivery progress here.
                   </div>
                 )}
               </>
             )}
           </div>
 
-          {/* Items */}
           <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">Items Ordered</h2>
             <div className="mt-4 divide-y divide-slate-100">
@@ -413,22 +415,27 @@ const OrderConfirmationPage = () => {
             </div>
           </div>
 
-          {/* Shipping */}
           {addr && (
             <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">Shipping Address</h2>
               <div className="mt-4 text-sm text-slate-700 space-y-1">
                 <p className="font-bold">{addr.fullName}</p>
                 <p>{addr.phone}</p>
-                <p>{addr.addressLine1}{addr.addressLine2 ? `, ${addr.addressLine2}` : ""}</p>
-                <p>{addr.city}{addr.state ? `, ${addr.state}` : ""}{addr.postalCode ? ` ${addr.postalCode}` : ""}</p>
+                <p>
+                  {addr.addressLine1}
+                  {addr.addressLine2 ? `, ${addr.addressLine2}` : ""}
+                </p>
+                <p>
+                  {addr.city}
+                  {addr.state ? `, ${addr.state}` : ""}
+                  {addr.postalCode ? ` ${addr.postalCode}` : ""}
+                </p>
                 <p>{addr.country}</p>
               </div>
             </div>
           )}
         </div>
 
-        {/* Right */}
         <div className="space-y-6">
           <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">Payment Summary</h2>
