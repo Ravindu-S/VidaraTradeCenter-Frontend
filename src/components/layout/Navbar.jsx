@@ -62,12 +62,12 @@ const Navbar = () => {
             >
               Best Sellers
             </Link>
-            <a
-              href="#about"
+            <Link
+              to="/about"
               className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors"
             >
               About
-            </a>
+            </Link>
           </nav>
         </div>
 
@@ -217,13 +217,13 @@ const Navbar = () => {
             >
               Best Sellers
             </Link>
-            <a
-              href="#about"
+            <Link
+              to="/about"
               onClick={() => setMobileMenuOpen(false)}
               className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
             >
               About
-            </a>
+            </Link>
           </nav>
         </div>
       )}
