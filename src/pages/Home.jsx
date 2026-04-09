@@ -113,12 +113,12 @@ const Home = () => {
               >
                 Shop the Collection
               </Link>
-              <a
-                href="#about"
+              <Link
+                to="/about"
                 className="flex h-14 items-center justify-center rounded-xl border-2 border-slate-200 bg-transparent px-8 text-base font-bold text-slate-900 transition-all hover:bg-slate-50 dark:border-slate-800 dark:text-white dark:hover:bg-slate-800"
               >
                 Our Story
-              </a>
+              </Link>
             </div>
           </div>
 
