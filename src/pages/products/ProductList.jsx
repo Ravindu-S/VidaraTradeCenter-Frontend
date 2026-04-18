@@ -5,7 +5,11 @@ import ProductCard from "../../components/product/ProductCard";
 import Pagination from "../../components/product/Pagination";
 import Loader from "../../components/common/Loader";
 
-const ProductList = () => {
+const ProductList = ({
+  pageTitle = "All Products",
+  forcedSortBy = null,
+  forcedSortDir = null,
+}) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [products, setProducts] = useState([]);
@@ -29,10 +33,10 @@ const ProductList = () => {
   );
   const [brandId, setBrandId] = useState(searchParams.get("brand") || "");
   const [sortBy, setSortBy] = useState(
-    searchParams.get("sortBy") || "createdAt"
+    forcedSortBy || searchParams.get("sortBy") || "createdAt"
   );
   const [sortDir, setSortDir] = useState(
-    searchParams.get("sortDir") || "desc"
+    forcedSortDir || searchParams.get("sortDir") || "desc"
   );
   const [minPrice, setMinPrice] = useState(
     searchParams.get("minPrice") || ""
@@ -63,7 +67,14 @@ const ProductList = () => {
     setLoading(true);
     setError(null);
     try {
-      const params = { page, size: 12, sortBy, sortDir };
+      const effectiveSortBy = forcedSortBy || sortBy;
+      const effectiveSortDir = forcedSortDir || sortDir;
+      const params = {
+        page,
+        size: 12,
+        sortBy: effectiveSortBy,
+        sortDir: effectiveSortDir,
+      };
       if (search) params.search = search;
       if (categoryId) params.categoryId = categoryId;
       if (brandId) params.brandId = brandId;
@@ -92,7 +103,18 @@ const ProductList = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, search, categoryId, brandId, sortBy, sortDir, minPrice, maxPrice]);
+  }, [
+    page,
+    search,
+    categoryId,
+    brandId,
+    sortBy,
+    sortDir,
+    minPrice,
+    maxPrice,
+    forcedSortBy,
+    forcedSortDir,
+  ]);
 
   useEffect(() => {
     fetchProducts();
@@ -105,8 +127,8 @@ const ProductList = () => {
     if (search) params.search = search;
     if (categoryId) params.category = categoryId;
     if (brandId) params.brand = brandId;
-    if (sortBy !== "createdAt") params.sortBy = sortBy;
-    if (sortDir !== "desc") params.sortDir = sortDir;
+    if (!forcedSortBy && sortBy !== "createdAt") params.sortBy = sortBy;
+    if (!forcedSortDir && sortDir !== "desc") params.sortDir = sortDir;
     if (minPrice) params.minPrice = minPrice;
     if (maxPrice) params.maxPrice = maxPrice;
     setSearchParams(params, { replace: true });
@@ -119,6 +141,8 @@ const ProductList = () => {
     sortDir,
     minPrice,
     maxPrice,
+    forcedSortBy,
+    forcedSortDir,
     setSearchParams,
   ]);
 
@@ -135,8 +159,8 @@ const ProductList = () => {
     setBrandId("");
     setMinPrice("");
     setMaxPrice("");
-    setSortBy("createdAt");
-    setSortDir("desc");
+    setSortBy(forcedSortBy || "createdAt");
+    setSortDir(forcedSortDir || "desc");
     setPage(0);
   };
 
@@ -164,7 +188,7 @@ const ProductList = () => {
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-          All Products
+          {pageTitle}
         </h1>
         <p className="mt-2 text-slate-500 dark:text-slate-400">
           {totalElements > 0
@@ -328,28 +352,31 @@ const ProductList = () => {
               {!loading &&
                 `Showing ${products.length} of ${totalElements} products`}
             </p>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-slate-500 dark:text-slate-400">
-                Sort by:
-              </label>
-              <select
-                value={`${sortBy}-${sortDir}`}
-                onChange={(e) => {
-                  const [newSort, newDir] = e.target.value.split("-");
-                  setSortBy(newSort);
-                  setSortDir(newDir);
-                  setPage(0);
-                }}
-                className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-              >
-                <option value="createdAt-desc">Newest</option>
-                <option value="createdAt-asc">Oldest</option>
-                <option value="basePrice-asc">Price: Low to High</option>
-                <option value="basePrice-desc">Price: High to Low</option>
-                <option value="name-asc">Name: A–Z</option>
-                <option value="name-desc">Name: Z–A</option>
-              </select>
-            </div>
+            {!forcedSortBy && !forcedSortDir && (
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-slate-500 dark:text-slate-400">
+                  Sort by:
+                </label>
+                <select
+                  value={`${sortBy}-${sortDir}`}
+                  onChange={(e) => {
+                    const [newSort, newDir] = e.target.value.split("-");
+                    setSortBy(newSort);
+                    setSortDir(newDir);
+                    setPage(0);
+                  }}
+                  className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                >
+                  <option value="createdAt-desc">Newest</option>
+                  <option value="createdAt-asc">Oldest</option>
+                  <option value="bestSold-desc">Best Sellers</option>
+                  <option value="basePrice-asc">Price: Low to High</option>
+                  <option value="basePrice-desc">Price: High to Low</option>
+                  <option value="name-asc">Name: A–Z</option>
+                  <option value="name-desc">Name: Z–A</option>
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Loading */}

@@ -21,6 +21,8 @@ import Brands from "./pages/admin/Brands";
 import AdminOrders from "./pages/admin/Orders";
 import ProductList from "./pages/products/ProductList";
 import ProductDetailPage from "./pages/products/ProductDetailPage";
+import NewArrivals from "./pages/products/NewArrivals";
+import BestSellers from "./pages/products/BestSellers";
 import CheckoutPage from "./pages/checkout/CheckoutPage";
 import MyOrdersPage from "./pages/order/MyOrdersPage";
 import OrderConfirmationPage from "./pages/order/OrderConfirmationPage";
@@ -41,6 +43,8 @@ function App() {
         {/* DEV 3: Product Catalog */}
         <Route path="products" element={<ProductList />} />
         <Route path="products/:id" element={<ProductDetailPage />} />
+        <Route path="new-arrivals" element={<NewArrivals />} />
+        <Route path="best-sellers" element={<BestSellers />} />
         {/* DEV 4: Shopping Cart */}
         <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         {/* DEV 5: Checkout & Payment */}
