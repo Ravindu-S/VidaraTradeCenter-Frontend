@@ -28,6 +28,8 @@ import PaymentReturnPage from "./pages/payment/PaymentReturnPage";
 import PaymentCancelPage from "./pages/payment/PaymentCancelPage";
 import DeliveryManagement from "./pages/admin/DeliveryManagement";
 import SubmitSupportTicket from "./pages/support/SubmitSupportTicket";
+import MyTickets from "./pages/support/MyTickets";
+import TicketDetail from "./pages/support/TicketDetail";
 function App() {
   return (
     <Routes>
@@ -50,8 +52,10 @@ function App() {
         <Route path="order/confirmation" element={<ProtectedRoute><OrderConfirmationPage /></ProtectedRoute>} />
         <Route path="payment/return" element={<ProtectedRoute><PaymentReturnPage /></ProtectedRoute>} />
         <Route path="payment/cancel" element={<ProtectedRoute><PaymentCancelPage /></ProtectedRoute>} />
-        {/* DEV 6: Support Ticket */}
+        {/* DEV: Support Ticket */}
         <Route path="support/submit" element={<ProtectedRoute><SubmitSupportTicket /></ProtectedRoute>} />
+        <Route path="support/tickets" element={<ProtectedRoute><MyTickets /></ProtectedRoute>} />
+        <Route path="support/tickets/:id" element={<ProtectedRoute><TicketDetail /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       {/* DEV 2: Admin Panel */}
