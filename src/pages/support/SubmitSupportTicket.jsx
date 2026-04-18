@@ -5,10 +5,19 @@ import { useToast } from "../../context/ToastContext";
 
 const CATEGORIES = [
   { value: "", label: "Select a category" },
-  { value: "ORDER", label: "Order Issue" },
-  { value: "PAYMENT", label: "Payment Issue" },
+  { value: "ORDER_ISSUE", label: "Order Issue" },
+  { value: "PAYMENT_ISSUE", label: "Payment Issue" },
+  { value: "PRODUCT_INQUIRY", label: "Product Inquiry" },
+  { value: "RETURN_REFUND", label: "Return / Refund" },
   { value: "ACCOUNT", label: "Account Issue" },
   { value: "OTHER", label: "Other" },
+];
+
+const PRIORITIES = [
+  { value: "LOW", label: "Low" },
+  { value: "MEDIUM", label: "Medium" },
+  { value: "HIGH", label: "High" },
+  { value: "URGENT", label: "Urgent" },
 ];
 
 const SubmitSupportTicket = () => {
@@ -17,6 +26,7 @@ const SubmitSupportTicket = () => {
   const [formData, setFormData] = useState({
     subject: "",
     category: "",
+    priority: "MEDIUM",
     description: "",
   });
   const [errors, setErrors] = useState({});
@@ -39,6 +49,9 @@ const SubmitSupportTicket = () => {
     if (!formData.category) {
       newErrors.category = "Category is required";
     }
+    if (!formData.priority) {
+      newErrors.priority = "Priority is required";
+    }
     if (!formData.description.trim()) {
       newErrors.description = "Description is required";
     }
@@ -55,11 +68,12 @@ const SubmitSupportTicket = () => {
       await submitSupportTicket({
         subject: formData.subject.trim(),
         category: formData.category,
+        priority: formData.priority,
         description: formData.description.trim(),
       });
 
       // Clear the form
-      setFormData({ subject: "", category: "", description: "" });
+      setFormData({ subject: "", category: "", priority: "MEDIUM", description: "" });
       setErrors({});
       setSubmitted(true);
       showSuccess("Your support ticket has been submitted successfully.");
@@ -191,6 +205,34 @@ const SubmitSupportTicket = () => {
                 </select>
                 {errors.category && (
                   <p className="mt-1 text-xs text-red-500">{errors.category}</p>
+                )}
+              </div>
+
+              {/* Priority */}
+              <div>
+                <label
+                  htmlFor="priority"
+                  className="block text-sm font-medium text-gray-700 mb-1.5"
+                >
+                  Priority <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="priority"
+                  name="priority"
+                  value={formData.priority}
+                  onChange={handleChange}
+                  className={`w-full rounded-lg border ${
+                    errors.priority ? "border-red-300" : "border-gray-200"
+                  } bg-gray-50 py-3 px-4 text-sm text-gray-900 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors appearance-none`}
+                >
+                  {PRIORITIES.map((p) => (
+                    <option key={p.value} value={p.value}>
+                      {p.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.priority && (
+                  <p className="mt-1 text-xs text-red-500">{errors.priority}</p>
                 )}
               </div>
 
