@@ -156,6 +156,14 @@ const Navbar = () => {
                       <span className="material-symbols-outlined text-lg">support_agent</span>
                       Support
                     </Link>
+                    <Link
+                      to="/support/tickets"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-lg">confirmation_number</span>
+                      My Tickets
+                    </Link>
                     {(user?.role === "ADMIN" || user?.roles?.includes("ADMIN")) && (
                       <Link
                         to="/admin"
