@@ -1,21 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getDashboardStats } from "../../api/adminApi";
+import {
+  getDashboardStats,
+  getLowStockProducts,
+  getOutOfStockProducts,
+} from "../../api/adminApi";
 import { useToast } from "../../context/ToastContext";
 const Dashboard = () => {
   const { showError } = useToast();
   const [stats, setStats] = useState(null);
+  const [lowStockProducts, setLowStockProducts] = useState([]);
+  const [outOfStockProducts, setOutOfStockProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetchStats();
+    fetchDashboardData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const fetchStats = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const response = await getDashboardStats();
-      setStats(response.data?.data || response.data);
-    } catch (err) {
-      showError("Failed to load dashboard stats");
+      const [statsResult, lowStockResult, outOfStockResult] = await Promise.allSettled([
+        getDashboardStats(),
+        getLowStockProducts(),
+        getOutOfStockProducts(),
+      ]);
+
+      if (statsResult.status === "fulfilled") {
+        const statsPayload = statsResult.value.data?.data || statsResult.value.data;
+        setStats(statsPayload);
+      } else {
+        showError("Failed to load dashboard stats");
+      }
+
+      if (lowStockResult.status === "fulfilled") {
+        const lowStockPayload = lowStockResult.value.data?.data || [];
+        setLowStockProducts(Array.isArray(lowStockPayload) ? lowStockPayload : []);
+      } else {
+        setLowStockProducts([]);
+        showError("Failed to load low stock alerts");
+      }
+
+      if (outOfStockResult.status === "fulfilled") {
+        const outOfStockPayload = outOfStockResult.value.data?.data || [];
+        setOutOfStockProducts(Array.isArray(outOfStockPayload) ? outOfStockPayload : []);
+      } else {
+        setOutOfStockProducts([]);
+        showError("Failed to load out of stock alerts");
+      }
     } finally {
       setLoading(false);
     }
@@ -30,6 +60,7 @@ const Dashboard = () => {
       </div>
     );
   }
+  const hasInventoryAlerts = outOfStockProducts.length > 0 || lowStockProducts.length > 0;
   const statCards = [
     {
       title: "Total Users",
@@ -113,6 +144,72 @@ const Dashboard = () => {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p className="mt-1 text-sm text-gray-500">Overview of your store's performance</p>
+      </div>
+      <div className="mb-8">
+        <h2 className="text-lg font-bold text-gray-900 mb-4">Inventory Alerts</h2>
+        {!hasInventoryAlerts ? (
+          <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
+            <p className="text-sm font-medium text-green-800">No inventory alerts right now</p>
+            <p className="mt-1 text-xs text-green-700">All products are above low stock thresholds.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-red-800">Out Of Stock</h3>
+                <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
+                  {outOfStockProducts.length}
+                </span>
+              </div>
+              {outOfStockProducts.length === 0 ? (
+                <p className="text-xs text-red-700">No out-of-stock products.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {outOfStockProducts.slice(0, 5).map((product) => (
+                    <li key={product.id} className="rounded-lg bg-white/70 p-2">
+                      <p className="text-sm font-medium text-gray-900">{product.name}</p>
+                      <p className="text-xs text-gray-600">SKU: {product.sku} | Stock: {product.stock ?? 0}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-amber-800">Low Stock</h3>
+                <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                  {lowStockProducts.length}
+                </span>
+              </div>
+              {lowStockProducts.length === 0 ? (
+                <p className="text-xs text-amber-700">No low-stock products.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {lowStockProducts.slice(0, 5).map((product) => (
+                    <li key={product.id} className="rounded-lg bg-white/70 p-2">
+                      <p className="text-sm font-medium text-gray-900">{product.name}</p>
+                      <p className="text-xs text-gray-600">
+                        SKU: {product.sku} | Stock: {product.stock ?? 0} | Threshold: {product.lowStockThreshold ?? 0}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+        {(lowStockProducts.length > 5 || outOfStockProducts.length > 5) && (
+          <Link
+            to="/admin/products"
+            className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            View more inventory items
+            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        )}
       </div>
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {statCards.map((card) => (
