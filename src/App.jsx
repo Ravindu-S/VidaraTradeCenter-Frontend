@@ -38,7 +38,6 @@ import Contact from "./pages/support/Contact";
 import Faq from "./pages/support/Faq";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
-
 function App() {
   return (
     <Routes>
