@@ -29,6 +29,9 @@ import OrderConfirmationPage from "./pages/order/OrderConfirmationPage";
 import PaymentReturnPage from "./pages/payment/PaymentReturnPage";
 import PaymentCancelPage from "./pages/payment/PaymentCancelPage";
 import DeliveryManagement from "./pages/admin/DeliveryManagement";
+import SubmitSupportTicket from "./pages/support/SubmitSupportTicket";
+import MyTickets from "./pages/support/MyTickets";
+import TicketDetail from "./pages/support/TicketDetail";
 import Shipping from "./pages/support/Shipping";
 import Returns from "./pages/support/Returns";
 import Contact from "./pages/support/Contact";
@@ -50,14 +53,26 @@ function App() {
         {/* DEV 3: Product Catalog */}
         <Route path="products" element={<ProductList />} />
         <Route path="products/:id" element={<ProductDetailPage />} />
+
+        {/* Additional Product Pages */}
         <Route path="new-arrivals" element={<NewArrivals />} />
         <Route path="best-sellers" element={<BestSellers />} />
+
+        {/* Support Info Pages */}
         <Route path="support/shipping" element={<Shipping />} />
         <Route path="support/returns" element={<Returns />} />
         <Route path="support/contact" element={<Contact />} />
         <Route path="support/faq" element={<Faq />} />
+
+        {/* Legal Pages */}
         <Route path="legal/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="legal/terms-of-service" element={<TermsOfService />} />
+
+        {/* DEV: Support Ticket */}
+        <Route path="support/submit" element={<ProtectedRoute><SubmitSupportTicket /></ProtectedRoute>} />
+        <Route path="support/tickets" element={<ProtectedRoute><MyTickets /></ProtectedRoute>} />
+        <Route path="support/tickets/:id" element={<ProtectedRoute><TicketDetail /></ProtectedRoute>} />
+
         {/* DEV 4: Shopping Cart */}
         <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         {/* DEV 5: Checkout & Payment */}
