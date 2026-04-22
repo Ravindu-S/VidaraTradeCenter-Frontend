@@ -45,6 +45,31 @@ const ProductList = ({
     searchParams.get("maxPrice") || ""
   );
 
+  // Sync URL params -> local state (needed when navbar search updates query on same route)
+  const query = searchParams.toString();
+  useEffect(() => {
+    const params = new URLSearchParams(query);
+
+    const nextPage = Number(params.get("page")) || 0;
+    const nextSearch = params.get("search") || "";
+    const nextCategoryId = params.get("category") || "";
+    const nextBrandId = params.get("brand") || "";
+    const nextSortBy = forcedSortBy || params.get("sortBy") || "createdAt";
+    const nextSortDir = forcedSortDir || params.get("sortDir") || "desc";
+    const nextMinPrice = params.get("minPrice") || "";
+    const nextMaxPrice = params.get("maxPrice") || "";
+
+    setPage((prev) => (prev === nextPage ? prev : nextPage));
+    setSearch((prev) => (prev === nextSearch ? prev : nextSearch));
+    setSearchInput((prev) => (prev === nextSearch ? prev : nextSearch));
+    setCategoryId((prev) => (prev === nextCategoryId ? prev : nextCategoryId));
+    setBrandId((prev) => (prev === nextBrandId ? prev : nextBrandId));
+    setSortBy((prev) => (prev === nextSortBy ? prev : nextSortBy));
+    setSortDir((prev) => (prev === nextSortDir ? prev : nextSortDir));
+    setMinPrice((prev) => (prev === nextMinPrice ? prev : nextMinPrice));
+    setMaxPrice((prev) => (prev === nextMaxPrice ? prev : nextMaxPrice));
+  }, [query, forcedSortBy, forcedSortDir]);
+
   // Fetch categories and brands once
   useEffect(() => {
     const fetchFiltersData = async () => {
