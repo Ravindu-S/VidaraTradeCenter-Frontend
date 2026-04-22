@@ -29,6 +29,13 @@ import OrderConfirmationPage from "./pages/order/OrderConfirmationPage";
 import PaymentReturnPage from "./pages/payment/PaymentReturnPage";
 import PaymentCancelPage from "./pages/payment/PaymentCancelPage";
 import DeliveryManagement from "./pages/admin/DeliveryManagement";
+import Shipping from "./pages/support/Shipping";
+import Returns from "./pages/support/Returns";
+import Contact from "./pages/support/Contact";
+import Faq from "./pages/support/Faq";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import TermsOfService from "./pages/legal/TermsOfService";
+
 function App() {
   return (
     <Routes>
@@ -45,6 +52,12 @@ function App() {
         <Route path="products/:id" element={<ProductDetailPage />} />
         <Route path="new-arrivals" element={<NewArrivals />} />
         <Route path="best-sellers" element={<BestSellers />} />
+        <Route path="support/shipping" element={<Shipping />} />
+        <Route path="support/returns" element={<Returns />} />
+        <Route path="support/contact" element={<Contact />} />
+        <Route path="support/faq" element={<Faq />} />
+        <Route path="legal/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="legal/terms-of-service" element={<TermsOfService />} />
         {/* DEV 4: Shopping Cart */}
         <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         {/* DEV 5: Checkout & Payment */}
