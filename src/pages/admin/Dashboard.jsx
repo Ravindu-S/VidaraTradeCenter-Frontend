@@ -60,6 +60,18 @@ const Dashboard = () => {
       </div>
     );
   }
+  const getStockValue = (product) => {
+    if (product?.currentStock !== undefined && product?.currentStock !== null) {
+      return product.currentStock;
+    }
+    if (product?.stock !== undefined && product?.stock !== null) {
+      return product.stock;
+    }
+    return null;
+  };
+  const lowStockCount = lowStockProducts.length;
+  const outOfStockCount = outOfStockProducts.length;
+  const totalAlerts = lowStockCount + outOfStockCount;
   const hasInventoryAlerts = outOfStockProducts.length > 0 || lowStockProducts.length > 0;
   const statCards = [
     {
@@ -148,13 +160,29 @@ const Dashboard = () => {
       <div className="mb-8">
         <h2 className="text-lg font-bold text-gray-900 mb-4">Inventory Alerts</h2>
         {!hasInventoryAlerts ? (
-          <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
-            <p className="text-sm font-medium text-green-800">No inventory alerts right now</p>
-            <p className="mt-1 text-xs text-green-700">All products are above low stock thresholds.</p>
+          <div className="rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 p-5">
+            <p className="text-sm font-semibold text-emerald-800">Inventory is healthy</p>
+            <p className="mt-1 text-xs text-emerald-700">No low-stock or out-of-stock products at the moment.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
+          <div>
+            <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-red-700">Out Of Stock</p>
+                <p className="mt-1 text-2xl font-bold text-red-800">{outOfStockCount}</p>
+              </div>
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Low Stock</p>
+                <p className="mt-1 text-2xl font-bold text-amber-800">{lowStockCount}</p>
+              </div>
+              <div className="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">Total Alerts</p>
+                <p className="mt-1 text-2xl font-bold text-indigo-800">{totalAlerts}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="rounded-2xl border border-red-200 bg-red-50/60 p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-red-800">Out Of Stock</h3>
                 <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
@@ -166,16 +194,24 @@ const Dashboard = () => {
               ) : (
                 <ul className="space-y-2">
                   {outOfStockProducts.slice(0, 5).map((product) => (
-                    <li key={product.id} className="rounded-lg bg-white/70 p-2">
-                      <p className="text-sm font-medium text-gray-900">{product.name}</p>
-                      <p className="text-xs text-gray-600">SKU: {product.sku} | Stock: {product.stock ?? 0}</p>
+                    <li key={product.id} className="rounded-lg bg-white p-3 shadow-sm">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{product.name}</p>
+                          <p className="text-xs text-gray-600">SKU: {product.sku}</p>
+                        </div>
+                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700">
+                          Restock Needed
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs font-medium text-red-700">Stock: {getStockValue(product) ?? 0}</p>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
 
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+              <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-amber-800">Low Stock</h3>
                 <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
@@ -187,15 +223,39 @@ const Dashboard = () => {
               ) : (
                 <ul className="space-y-2">
                   {lowStockProducts.slice(0, 5).map((product) => (
-                    <li key={product.id} className="rounded-lg bg-white/70 p-2">
-                      <p className="text-sm font-medium text-gray-900">{product.name}</p>
-                      <p className="text-xs text-gray-600">
-                        SKU: {product.sku} | Stock: {product.stock ?? 0} | Threshold: {product.lowStockThreshold ?? 0}
+                    <li key={product.id} className="rounded-lg bg-white p-3 shadow-sm">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{product.name}</p>
+                          <p className="text-xs text-gray-600">SKU: {product.sku}</p>
+                        </div>
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+                          Low
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-gray-700">
+                        Stock: {getStockValue(product) ?? 0} | Threshold: {product.lowStockThreshold ?? 0}
                       </p>
+                      <div className="mt-2 h-1.5 w-full rounded-full bg-amber-100">
+                        <div
+                          className="h-1.5 rounded-full bg-amber-500"
+                          style={{
+                            width: `${Math.min(
+                              100,
+                              Math.round(
+                                ((getStockValue(product) ?? 0) /
+                                  Math.max(product.lowStockThreshold ?? 1, 1)) *
+                                  100
+                              )
+                            )}%`,
+                          }}
+                        />
+                      </div>
                     </li>
                   ))}
                 </ul>
               )}
+            </div>
             </div>
           </div>
         )}
