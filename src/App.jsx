@@ -33,9 +33,6 @@ import Shipping from "./pages/support/Shipping";
 import Returns from "./pages/support/Returns";
 import Contact from "./pages/support/Contact";
 import Faq from "./pages/support/Faq";
-import SubmitSupportTicket from "./pages/support/SubmitSupportTicket";
-import MyTickets from "./pages/support/MyTickets";
-import TicketDetail from "./pages/support/TicketDetail";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
 
@@ -55,16 +52,10 @@ function App() {
         <Route path="products/:id" element={<ProductDetailPage />} />
         <Route path="new-arrivals" element={<NewArrivals />} />
         <Route path="best-sellers" element={<BestSellers />} />
-        {/* Support Info Pages */}
         <Route path="support/shipping" element={<Shipping />} />
         <Route path="support/returns" element={<Returns />} />
         <Route path="support/contact" element={<Contact />} />
         <Route path="support/faq" element={<Faq />} />
-        {/* DEV: Support Ticket */}
-        <Route path="support/submit" element={<ProtectedRoute><SubmitSupportTicket /></ProtectedRoute>} />
-        <Route path="support/tickets" element={<ProtectedRoute><MyTickets /></ProtectedRoute>} />
-        <Route path="support/tickets/:id" element={<ProtectedRoute><TicketDetail /></ProtectedRoute>} />
-        {/* Legal Pages */}
         <Route path="legal/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="legal/terms-of-service" element={<TermsOfService />} />
         {/* DEV 4: Shopping Cart */}
