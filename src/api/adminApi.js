@@ -4,6 +4,14 @@ import API from "./axios";
 export const getDashboardStats = () => {
   return API.get("/admin/dashboard/stats");
 };
+// GET /api/admin/inventory/low-stock
+export const getLowStockProducts = () => {
+  return API.get("/admin/inventory/low-stock");
+};
+// GET /api/admin/inventory/out-of-stock
+export const getOutOfStockProducts = () => {
+  return API.get("/admin/inventory/out-of-stock");
+};
 // ==================== USERS ====================
 // GET /api/admin/users
 export const getAdminUsers = (params = {}) => {

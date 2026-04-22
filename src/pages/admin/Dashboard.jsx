@@ -1,21 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getDashboardStats } from "../../api/adminApi";
+import {
+  getDashboardStats,
+  getLowStockProducts,
+  getOutOfStockProducts,
+} from "../../api/adminApi";
 import { useToast } from "../../context/ToastContext";
 const Dashboard = () => {
   const { showError } = useToast();
   const [stats, setStats] = useState(null);
+  const [lowStockProducts, setLowStockProducts] = useState([]);
+  const [outOfStockProducts, setOutOfStockProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetchStats();
+    fetchDashboardData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const fetchStats = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const response = await getDashboardStats();
-      setStats(response.data?.data || response.data);
-    } catch (err) {
-      showError("Failed to load dashboard stats");
+      const [statsResult, lowStockResult, outOfStockResult] = await Promise.allSettled([
+        getDashboardStats(),
+        getLowStockProducts(),
+        getOutOfStockProducts(),
+      ]);
+
+      if (statsResult.status === "fulfilled") {
+        const statsPayload = statsResult.value.data?.data || statsResult.value.data;
+        setStats(statsPayload);
+      } else {
+        showError("Failed to load dashboard stats");
+      }
+
+      if (lowStockResult.status === "fulfilled") {
+        const lowStockPayload = lowStockResult.value.data?.data || [];
+        setLowStockProducts(Array.isArray(lowStockPayload) ? lowStockPayload : []);
+      } else {
+        setLowStockProducts([]);
+        showError("Failed to load low stock alerts");
+      }
+
+      if (outOfStockResult.status === "fulfilled") {
+        const outOfStockPayload = outOfStockResult.value.data?.data || [];
+        setOutOfStockProducts(Array.isArray(outOfStockPayload) ? outOfStockPayload : []);
+      } else {
+        setOutOfStockProducts([]);
+        showError("Failed to load out of stock alerts");
+      }
     } finally {
       setLoading(false);
     }
@@ -30,6 +60,19 @@ const Dashboard = () => {
       </div>
     );
   }
+  const getStockValue = (product) => {
+    if (product?.currentStock !== undefined && product?.currentStock !== null) {
+      return product.currentStock;
+    }
+    if (product?.stock !== undefined && product?.stock !== null) {
+      return product.stock;
+    }
+    return null;
+  };
+  const lowStockCount = lowStockProducts.length;
+  const outOfStockCount = outOfStockProducts.length;
+  const totalAlerts = lowStockCount + outOfStockCount;
+  const hasInventoryAlerts = outOfStockProducts.length > 0 || lowStockProducts.length > 0;
   const statCards = [
     {
       title: "Total Users",
@@ -113,6 +156,120 @@ const Dashboard = () => {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p className="mt-1 text-sm text-gray-500">Overview of your store's performance</p>
+      </div>
+      <div className="mb-8">
+        <h2 className="text-lg font-bold text-gray-900 mb-4">Inventory Alerts</h2>
+        {!hasInventoryAlerts ? (
+          <div className="rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 p-5">
+            <p className="text-sm font-semibold text-emerald-800">Inventory is healthy</p>
+            <p className="mt-1 text-xs text-emerald-700">No low-stock or out-of-stock products at the moment.</p>
+          </div>
+        ) : (
+          <div>
+            <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-red-700">Out Of Stock</p>
+                <p className="mt-1 text-2xl font-bold text-red-800">{outOfStockCount}</p>
+              </div>
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Low Stock</p>
+                <p className="mt-1 text-2xl font-bold text-amber-800">{lowStockCount}</p>
+              </div>
+              <div className="rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700">Total Alerts</p>
+                <p className="mt-1 text-2xl font-bold text-indigo-800">{totalAlerts}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="rounded-2xl border border-red-200 bg-red-50/60 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-red-800">Out Of Stock</h3>
+                <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
+                  {outOfStockProducts.length}
+                </span>
+              </div>
+              {outOfStockProducts.length === 0 ? (
+                <p className="text-xs text-red-700">No out-of-stock products.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {outOfStockProducts.slice(0, 5).map((product) => (
+                    <li key={product.id} className="rounded-lg bg-white p-3 shadow-sm">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{product.name}</p>
+                          <p className="text-xs text-gray-600">SKU: {product.sku}</p>
+                        </div>
+                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700">
+                          Restock Needed
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs font-medium text-red-700">Stock: {getStockValue(product) ?? 0}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+              <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-amber-800">Low Stock</h3>
+                <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                  {lowStockProducts.length}
+                </span>
+              </div>
+              {lowStockProducts.length === 0 ? (
+                <p className="text-xs text-amber-700">No low-stock products.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {lowStockProducts.slice(0, 5).map((product) => (
+                    <li key={product.id} className="rounded-lg bg-white p-3 shadow-sm">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">{product.name}</p>
+                          <p className="text-xs text-gray-600">SKU: {product.sku}</p>
+                        </div>
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+                          Low
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-gray-700">
+                        Stock: {getStockValue(product) ?? 0} | Threshold: {product.lowStockThreshold ?? 0}
+                      </p>
+                      <div className="mt-2 h-1.5 w-full rounded-full bg-amber-100">
+                        <div
+                          className="h-1.5 rounded-full bg-amber-500"
+                          style={{
+                            width: `${Math.min(
+                              100,
+                              Math.round(
+                                ((getStockValue(product) ?? 0) /
+                                  Math.max(product.lowStockThreshold ?? 1, 1)) *
+                                  100
+                              )
+                            )}%`,
+                          }}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            </div>
+          </div>
+        )}
+        {(lowStockProducts.length > 5 || outOfStockProducts.length > 5) && (
+          <Link
+            to="/admin/products"
+            className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            View more inventory items
+            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        )}
       </div>
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {statCards.map((card) => (
