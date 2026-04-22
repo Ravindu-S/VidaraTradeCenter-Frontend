@@ -32,6 +32,8 @@ import DeliveryManagement from "./pages/admin/DeliveryManagement";
 import SubmitSupportTicket from "./pages/support/SubmitSupportTicket";
 import MyTickets from "./pages/support/MyTickets";
 import TicketDetail from "./pages/support/TicketDetail";
+import AdminTicketList from "./pages/admin/AdminTicketList";
+import AdminTicketDetail from "./pages/admin/AdminTicketDetail";
 import Shipping from "./pages/support/Shipping";
 import Returns from "./pages/support/Returns";
 import Contact from "./pages/support/Contact";
@@ -93,6 +95,8 @@ function App() {
         <Route path="brands" element={<Brands />} />
         <Route path="orders" element={<AdminOrders />} />
         <Route path="deliveries" element={<DeliveryManagement />} />
+        <Route path="support" element={<AdminTicketList />} />
+        <Route path="support/:id" element={<AdminTicketDetail />} />
       </Route>
     </Routes>
   );
