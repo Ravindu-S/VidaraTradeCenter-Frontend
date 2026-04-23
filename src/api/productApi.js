@@ -35,6 +35,16 @@ export const getProductById = (id) => {
   return API.get(`/products/${id}`);
 };
 
+// Product reviews (GET public; POST / me require JWT via axios interceptor)
+export const getProductReviews = (productId) =>
+  API.get(`/products/${productId}/reviews`);
+
+export const getMyProductReview = (productId) =>
+  API.get(`/products/${productId}/reviews/me`);
+
+export const submitProductReview = (productId, body) =>
+  API.post(`/products/${productId}/reviews`, body);
+
 // GET /api/categories (DEV 3: implement when ready)
 export const getCategories = () => {
   return API.get("/categories");

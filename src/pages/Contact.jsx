@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
+import { submitContactInquiry } from "../api/contactApi";
+
+/** Same inbox used for order confirmations — Contact form delivers here. */
+const SUPPORT_INBOX = "support.vidaratradecenter@gmail.com";
 
 const initialForm = {
   name: "",
@@ -23,8 +27,8 @@ const contactCards = [
   {
     icon: "mail",
     title: "Email",
-    lines: ["support@vidaratradecenter.com"],
-    href: "mailto:support@vidaratradecenter.com",
+    lines: [SUPPORT_INBOX],
+    href: `mailto:${SUPPORT_INBOX}`,
     action: "Send email",
   },
   {
@@ -47,13 +51,15 @@ const Contact = () => {
   const { showSuccess, showError } = useToast();
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
+  const [messageSent, setMessageSent] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setMessageSent(false);
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       showError("Please fill in your name, email, and message.");
@@ -66,14 +72,34 @@ const Contact = () => {
     }
 
     setSubmitting(true);
-    // Frontend-only: backend email API will plug in here later
-    setTimeout(() => {
-      setSubmitting(false);
-      showSuccess(
-        "Thanks for reaching out — we'll reply soon. (Email delivery is coming next.)"
-      );
+    try {
+      await submitContactInquiry({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || undefined,
+        subject: form.subject,
+        message: form.message.trim(),
+      });
+      setMessageSent(true);
       setForm(initialForm);
-    }, 400);
+      showSuccess(
+        `Message sent to ${SUPPORT_INBOX}. We received it and will reply as soon as we can.`
+      );
+    } catch (err) {
+      const payload = err.response?.data;
+      const fieldErrors = payload?.data && typeof payload.data === "object" ? payload.data : null;
+      const firstField =
+        fieldErrors && Object.keys(fieldErrors).length > 0
+          ? Object.values(fieldErrors)[0]
+          : null;
+      const msg =
+        firstField ||
+        payload?.message ||
+        "Could not send your message. Please try again or email us directly.";
+      showError(typeof msg === "string" ? msg : "Could not send your message.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -105,9 +131,35 @@ const Contact = () => {
                 Send a message
               </h2>
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                This form is saved in the browser for now — email sending will
-                connect to the server later.
+                Messages are delivered to{" "}
+                <a
+                  href={`mailto:${SUPPORT_INBOX}`}
+                  className="font-medium text-primary underline-offset-2 hover:underline dark:text-accent-gold"
+                >
+                  {SUPPORT_INBOX}
+                </a>{" "}
+                (the same address we use for order notifications). We&apos;ll reply from there.
               </p>
+
+              {messageSent && (
+                <div
+                  className="mt-6 flex gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100"
+                  role="status"
+                >
+                  <span className="material-symbols-outlined shrink-0 text-emerald-600 dark:text-emerald-400">
+                    mark_email_read
+                  </span>
+                  <div className="text-sm leading-relaxed">
+                    <p className="font-semibold">Your message was sent</p>
+                    <p className="mt-1 text-emerald-800 dark:text-emerald-200/90">
+                      It was delivered to{" "}
+                      <strong className="font-mono text-[0.9em]">{SUPPORT_INBOX}</strong>. Check
+                      your inbox later for our reply — we may also reach you at the email you
+                      entered above.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <label className="flex flex-col gap-1.5 sm:col-span-1">

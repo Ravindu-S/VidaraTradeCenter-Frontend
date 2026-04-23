@@ -5,7 +5,7 @@ import { useToast } from "../../context/ToastContext";
 import { useCart } from "../../context/CartContext";
 import { getAddresses } from "../../api/addressApi";
 import { placeOrder } from "../../api/checkoutApi";
-import { initiatePayment } from "../../api/paymentApi";
+import { initiatePayment, reconcileSandboxOrder } from "../../api/paymentApi";
 
 const formatPrice = (value) => {
   if (value == null) return "LKR 0.00";
@@ -54,6 +54,7 @@ const CheckoutPage = () => {
       try {
         const res = await initiatePayment(orderNumber);
         const pd = res.data?.data || res.data;
+        const paymentSandbox = !!pd.sandbox;
 
         const payment = {
           sandbox: pd.sandbox,
@@ -75,10 +76,26 @@ const CheckoutPage = () => {
           country: pd.country,
         };
 
-        window.payhere.onCompleted = function (orderId) {
+        window.payhere.onCompleted = async function (orderId) {
           setPaymentLoading(false);
-          showSuccess("Payment completed for order " + orderId);
-          navigate("/order/confirmation?order=" + orderId);
+          const orderNo = String(orderId);
+          showSuccess("Payment completed for order " + orderNo);
+          if (paymentSandbox) {
+            try {
+              await reconcileSandboxOrder({ orderNumber: orderNo });
+            } catch (err) {
+              const msg =
+                err.response?.data?.message ||
+                err.response?.data?.error ||
+                err.message ||
+                "Request failed";
+              console.error("Sandbox reconcile failed — order may stay PENDING and no confirmation email:", err);
+              showError(
+                `Could not finalize payment on the server: ${msg}. If this persists, check you are still logged in (JWT) and backend logs.`
+              );
+            }
+          }
+          navigate("/order/confirmation?order=" + orderNo);
         };
 
         window.payhere.onDismissed = function () {
