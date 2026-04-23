@@ -19,6 +19,12 @@ const CartSummary = ({ cart, onCheckout }) => {
       </h2>
 
       <div className="space-y-3 mb-6">
+        {cart?.membershipActive && (
+          <p className="text-xs font-medium text-primary">
+            Member pricing applied{cart.membershipPlan ? ` (${cart.membershipPlan})` : ""} — stacks with bulk
+            discounts.
+          </p>
+        )}
         <div className="flex justify-between text-sm">
           <span className="text-slate-600 dark:text-slate-400">
             Subtotal ({cart?.totalItems || 0} items)

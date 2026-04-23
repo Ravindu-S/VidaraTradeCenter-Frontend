@@ -148,6 +148,14 @@ const Navbar = () => {
                       <span className="material-symbols-outlined text-lg">receipt_long</span>
                       My Orders
                     </Link>
+                    <Link
+                      to="/subscriptions"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-lg">workspace_premium</span>
+                      My memberships
+                    </Link>
                     {(user?.role === "ADMIN" || user?.roles?.includes("ADMIN")) && (
                       <Link
                         to="/admin"

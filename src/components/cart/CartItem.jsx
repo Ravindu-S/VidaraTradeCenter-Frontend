@@ -13,6 +13,11 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
     return `LKR ${Number(price).toFixed(2)}`;
   };
 
+  const hasStackedPricing =
+    item.effectiveUnitPrice != null &&
+    item.effectiveSubtotal != null &&
+    (Number(item.bulkDiscountPercent) > 0 || Number(item.membershipDiscountPercent) > 0);
+
   // Get available stock from item
   const availableStock = item.stock !== undefined && item.stock !== null ? item.stock : null;
   const hasStockData = availableStock !== null;
@@ -82,7 +87,15 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
           </Link>
           <div className="flex items-center gap-2 mt-1">
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              {formatPrice(item.price)} each
+              {hasStackedPricing ? (
+                <>
+                  <span className="line-through opacity-70">{formatPrice(item.price)}</span>
+                  <span className="font-semibold text-primary">{formatPrice(item.effectiveUnitPrice)}</span>
+                  <span>each</span>
+                </>
+              ) : (
+                <>{formatPrice(item.price)} each</>
+              )}
             </p>
             {item.priceChanged && item.priceAtAddition && (
               <div className="flex items-center gap-1">
@@ -148,8 +161,11 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
       {/* Subtotal */}
       <div className="flex-shrink-0 text-right">
         <p className="font-bold text-lg text-slate-900 dark:text-white">
-          {formatPrice(item.subtotal)}
+          {formatPrice(hasStackedPricing ? item.effectiveSubtotal : item.subtotal)}
         </p>
+        {hasStackedPricing && (
+          <p className="text-xs text-slate-400 line-through">{formatPrice(item.subtotal)}</p>
+        )}
       </div>
     </div>
   );

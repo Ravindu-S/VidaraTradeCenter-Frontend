@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Profile from "./pages/profile/Profile";
@@ -27,12 +28,16 @@ import OrderConfirmationPage from "./pages/order/OrderConfirmationPage";
 import PaymentReturnPage from "./pages/payment/PaymentReturnPage";
 import PaymentCancelPage from "./pages/payment/PaymentCancelPage";
 import DeliveryManagement from "./pages/admin/DeliveryManagement";
+import MySubscriptionsPage from "./pages/subscriptions/MySubscriptionsPage";
+import SubscriptionManagement from "./pages/admin/SubscriptionManagement";
+import MembershipPlansPage from "./pages/membership/MembershipPlansPage";
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
+        <Route path="contact" element={<Contact />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         {/* DEV 2: Profile & Address Management */}
@@ -41,6 +46,7 @@ function App() {
         {/* DEV 3: Product Catalog */}
         <Route path="products" element={<ProductList />} />
         <Route path="products/:id" element={<ProductDetailPage />} />
+        <Route path="membership" element={<MembershipPlansPage />} />
         {/* DEV 4: Shopping Cart */}
         <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         {/* DEV 5: Checkout & Payment */}
@@ -49,6 +55,7 @@ function App() {
         <Route path="order/confirmation" element={<ProtectedRoute><OrderConfirmationPage /></ProtectedRoute>} />
         <Route path="payment/return" element={<ProtectedRoute><PaymentReturnPage /></ProtectedRoute>} />
         <Route path="payment/cancel" element={<ProtectedRoute><PaymentCancelPage /></ProtectedRoute>} />
+        <Route path="subscriptions" element={<ProtectedRoute><MySubscriptionsPage /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       {/* DEV 2: Admin Panel */}
@@ -62,6 +69,7 @@ function App() {
         <Route path="brands" element={<Brands />} />
         <Route path="orders" element={<AdminOrders />} />
         <Route path="deliveries" element={<DeliveryManagement />} />
+        <Route path="memberships" element={<SubscriptionManagement />} />
       </Route>
     </Routes>
   );
