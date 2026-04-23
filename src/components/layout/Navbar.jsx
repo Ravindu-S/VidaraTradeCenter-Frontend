@@ -6,6 +6,7 @@ import { useCart } from "../../context/CartContext";
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { isAuthenticated, user, logout } = useAuth();
   const { cartItemCount } = useCart();
   const navigate = useNavigate();
@@ -26,6 +27,16 @@ const Navbar = () => {
     logout();
     setUserMenuOpen(false);
     navigate("/login");
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    const trimmedQuery = searchQuery.trim();
+    if (!trimmedQuery) {
+      navigate("/products");
+      return;
+    }
+    navigate(`/products?search=${encodeURIComponent(trimmedQuery)}`);
   };
 
   return (
@@ -51,13 +62,13 @@ const Navbar = () => {
               Shop All
             </Link>
             <Link
-              to="/products?sort=newest"
+              to="/new-arrivals"
               className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors"
             >
               New Arrivals
             </Link>
             <Link
-              to="/products?sort=popular"
+              to="/best-sellers"
               className="text-sm font-medium text-slate-600 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors"
             >
               Best Sellers
@@ -75,7 +86,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           {/* Desktop Search */}
           <div className="hidden lg:flex items-center">
-            <label className="relative block">
+            <form onSubmit={handleSearchSubmit} className="relative block">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                 <span className="material-symbols-outlined text-slate-400 text-sm">
                   search
@@ -85,8 +96,10 @@ const Navbar = () => {
                 className="h-10 w-64 rounded-lg border-none bg-slate-100 pl-10 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-slate-800 dark:placeholder:text-slate-400 dark:text-white"
                 placeholder="Find products..."
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </label>
+            </form>
           </div>
 
           {/* Icon Buttons */}
@@ -105,7 +118,10 @@ const Navbar = () => {
             </Link>
 
             {/* Mobile Search */}
-            <button className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors md:hidden">
+            <button
+              onClick={() => navigate("/products")}
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors md:hidden"
+            >
               <span className="material-symbols-outlined">search</span>
             </button>
 
@@ -154,7 +170,23 @@ const Navbar = () => {
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                     >
                       <span className="material-symbols-outlined text-lg">workspace_premium</span>
-                      My memberships
+                      My Memberships
+                    </Link>
+                    <Link
+                      to="/support/submit"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-lg">support_agent</span>
+                      Support
+                    </Link>
+                    <Link
+                      to="/support/tickets"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-lg">confirmation_number</span>
+                      My Tickets
                     </Link>
                     {(user?.role === "ADMIN" || user?.roles?.includes("ADMIN")) && (
                       <Link
@@ -212,14 +244,14 @@ const Navbar = () => {
               Shop All
             </Link>
             <Link
-              to="/products?sort=newest"
+              to="/new-arrivals"
               onClick={() => setMobileMenuOpen(false)}
               className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
             >
               New Arrivals
             </Link>
             <Link
-              to="/products?sort=popular"
+              to="/best-sellers"
               onClick={() => setMobileMenuOpen(false)}
               className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-primary dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
             >
