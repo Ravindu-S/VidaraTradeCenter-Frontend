@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Profile from "./pages/profile/Profile";
@@ -29,6 +30,9 @@ import OrderConfirmationPage from "./pages/order/OrderConfirmationPage";
 import PaymentReturnPage from "./pages/payment/PaymentReturnPage";
 import PaymentCancelPage from "./pages/payment/PaymentCancelPage";
 import DeliveryManagement from "./pages/admin/DeliveryManagement";
+import MySubscriptionsPage from "./pages/subscriptions/MySubscriptionsPage";
+import SubscriptionManagement from "./pages/admin/SubscriptionManagement";
+import MembershipPlansPage from "./pages/membership/MembershipPlansPage";
 import SubmitSupportTicket from "./pages/support/SubmitSupportTicket";
 import MyTickets from "./pages/support/MyTickets";
 import TicketDetail from "./pages/support/TicketDetail";
@@ -36,7 +40,7 @@ import AdminTicketList from "./pages/admin/AdminTicketList";
 import AdminTicketDetail from "./pages/admin/AdminTicketDetail";
 import Shipping from "./pages/support/Shipping";
 import Returns from "./pages/support/Returns";
-import Contact from "./pages/support/Contact";
+import SupportContact from "./pages/support/Contact";
 import Faq from "./pages/support/Faq";
 import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
 import TermsOfService from "./pages/legal/TermsOfService";
@@ -46,6 +50,7 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
+        <Route path="contact" element={<Contact />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         {/* DEV 2: Profile & Address Management */}
@@ -54,6 +59,7 @@ function App() {
         {/* DEV 3: Product Catalog */}
         <Route path="products" element={<ProductList />} />
         <Route path="products/:id" element={<ProductDetailPage />} />
+        <Route path="membership" element={<MembershipPlansPage />} />
 
         {/* Additional Product Pages */}
         <Route path="new-arrivals" element={<NewArrivals />} />
@@ -62,7 +68,7 @@ function App() {
         {/* Support Info Pages */}
         <Route path="support/shipping" element={<Shipping />} />
         <Route path="support/returns" element={<Returns />} />
-        <Route path="support/contact" element={<Contact />} />
+        <Route path="support/contact" element={<SupportContact />} />
         <Route path="support/faq" element={<Faq />} />
 
         {/* Legal Pages */}
@@ -73,7 +79,6 @@ function App() {
         <Route path="support/submit" element={<ProtectedRoute><SubmitSupportTicket /></ProtectedRoute>} />
         <Route path="support/tickets" element={<ProtectedRoute><MyTickets /></ProtectedRoute>} />
         <Route path="support/tickets/:id" element={<ProtectedRoute><TicketDetail /></ProtectedRoute>} />
-
         {/* DEV 4: Shopping Cart */}
         <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
         {/* DEV 5: Checkout & Payment */}
@@ -82,6 +87,7 @@ function App() {
         <Route path="order/confirmation" element={<ProtectedRoute><OrderConfirmationPage /></ProtectedRoute>} />
         <Route path="payment/return" element={<ProtectedRoute><PaymentReturnPage /></ProtectedRoute>} />
         <Route path="payment/cancel" element={<ProtectedRoute><PaymentCancelPage /></ProtectedRoute>} />
+        <Route path="subscriptions" element={<ProtectedRoute><MySubscriptionsPage /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
       {/* DEV 2: Admin Panel */}
@@ -95,6 +101,7 @@ function App() {
         <Route path="brands" element={<Brands />} />
         <Route path="orders" element={<AdminOrders />} />
         <Route path="deliveries" element={<DeliveryManagement />} />
+        <Route path="memberships" element={<SubscriptionManagement />} />
         <Route path="support" element={<AdminTicketList />} />
         <Route path="support/:id" element={<AdminTicketDetail />} />
       </Route>

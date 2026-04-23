@@ -4,6 +4,7 @@ import { getProductById } from "../../api/productApi";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import Loader from "../../components/common/Loader";
+import BulkMembershipSavingsBar from "../../components/membership/BulkMembershipSavingsBar";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -336,9 +337,10 @@ const ProductDetailPage = () => {
             </div>
           )}
 
+          <BulkMembershipSavingsBar product={product} quantity={quantity} />
+
           {/* Quantity & Add to Cart */}
           <div className="mt-8 space-y-4">
-            {/* Quantity Selector */}
             {product.stock > 0 && (
               <div className="flex items-center gap-4">
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -346,6 +348,7 @@ const ProductDetailPage = () => {
                 </span>
                 <div className="flex items-center border-2 border-slate-200 dark:border-slate-700 rounded-lg">
                   <button
+                    type="button"
                     onClick={() => handleQuantityChange(-1)}
                     disabled={quantity <= 1}
                     className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -356,6 +359,7 @@ const ProductDetailPage = () => {
                     {quantity}
                   </span>
                   <button
+                    type="button"
                     onClick={() => handleQuantityChange(1)}
                     disabled={quantity >= product.stock}
                     className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -370,8 +374,8 @@ const ProductDetailPage = () => {
             )}
 
             <div className="flex gap-3">
-              {/* Add to Cart Button */}
               <button
+                type="button"
                 onClick={handleAddToCart}
                 disabled={addingToCart || buyingNow || !product.stock || product.stock <= 0}
                 className="flex h-14 flex-1 items-center justify-center gap-3 rounded-xl border-2 border-primary bg-white px-6 text-base font-bold text-primary transition-transform active:scale-95 hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -394,8 +398,8 @@ const ProductDetailPage = () => {
                 )}
               </button>
 
-              {/* Buy Now Button */}
               <button
+                type="button"
                 onClick={handleBuyNow}
                 disabled={buyingNow || addingToCart || !product.stock || product.stock <= 0}
                 className="flex h-14 flex-1 items-center justify-center gap-3 rounded-xl bg-accent-gold px-6 text-base font-bold text-white transition-transform active:scale-95 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"

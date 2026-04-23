@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { processRefund } from "../../api/adminApi";
 import { useToast } from "../../context/ToastContext";
 import { formatPrice } from "../../utils/formatters";
@@ -45,20 +46,24 @@ const RefundModal = ({ isOpen, onClose, order, onRefundSuccess }) => {
       return;
     }
 
-    if (!formData.fullRefund && formData.refundAmount > order.totalAmount) {
+    const orderTotal = Number(order.totalAmount);
+    const partial = Number(formData.refundAmount);
+
+    if (!formData.fullRefund && partial > orderTotal) {
       showError("Refund amount cannot exceed order total");
       return;
     }
 
-    if (!formData.fullRefund && formData.refundAmount <= 0) {
+    if (!formData.fullRefund && partial <= 0) {
       showError("Refund amount must be greater than 0");
       return;
     }
 
     setLoading(true);
     try {
+      const refundAmount = formData.fullRefund ? orderTotal : partial;
       const response = await processRefund(order.id, {
-        refundAmount: formData.fullRefund ? order.totalAmount : parseFloat(formData.refundAmount),
+        refundAmount,
         reason: formData.reason.trim(),
         fullRefund: formData.fullRefund,
         notes: formData.notes.trim() || null,
@@ -74,10 +79,10 @@ const RefundModal = ({ isOpen, onClose, order, onRefundSuccess }) => {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+  const modal = (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center">
+      {/* Overlay — keep under dialog panel */}
+      <div className="absolute inset-0 z-0 bg-black/50" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl mx-4">
@@ -218,6 +223,8 @@ const RefundModal = ({ isOpen, onClose, order, onRefundSuccess }) => {
       </div>
     </div>
   );
+
+  return createPortal(modal, document.body);
 };
 
 export default RefundModal;
