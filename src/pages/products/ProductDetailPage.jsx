@@ -5,6 +5,7 @@ import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import Loader from "../../components/common/Loader";
 import BulkMembershipSavingsBar from "../../components/membership/BulkMembershipSavingsBar";
+import ProductReviewsSection from "../../components/products/ProductReviewsSection";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -444,6 +445,8 @@ const ProductDetailPage = () => {
           )}
         </div>
       </div>
+
+      <ProductReviewsSection productId={product.id} isAuthenticated={isAuthenticated} />
     </section>
   );
 };
