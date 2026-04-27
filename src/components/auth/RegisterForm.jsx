@@ -225,13 +225,13 @@ const RegisterForm = () => {
         />
         <label htmlFor="terms" className="ml-2 text-sm text-gray-500">
           I agree to the{" "}
-          <a href="#" className="font-semibold text-gray-900 hover:text-indigo-600">
+          <span role="button" tabIndex={0} className="font-semibold text-gray-900 hover:text-indigo-600 cursor-pointer">
             Terms of Service
-          </a>{" "}
+          </span>{" "}
           and{" "}
-          <a href="#" className="font-semibold text-gray-900 hover:text-indigo-600">
+          <span role="button" tabIndex={0} className="font-semibold text-gray-900 hover:text-indigo-600 cursor-pointer">
             Privacy Policy
-          </a>
+          </span>
           .
         </label>
       </div>

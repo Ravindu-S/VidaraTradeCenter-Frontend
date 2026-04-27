@@ -60,20 +60,20 @@ const Footer = () => {
               Modern essentials for the ambitious professional.
             </p>
             <div className="flex gap-4">
-              <a
-                href="#"
+              <button
+                type="button"
                 className="text-slate-400 hover:text-primary dark:hover:text-white transition-colors"
                 aria-label="Share"
               >
                 <span className="material-symbols-outlined">share</span>
-              </a>
-              <a
-                href="#"
+              </button>
+              <button
+                type="button"
                 className="text-slate-400 hover:text-primary dark:hover:text-white transition-colors"
                 aria-label="Email"
               >
                 <span className="material-symbols-outlined">mail</span>
-              </a>
+              </button>
             </div>
           </div>
 
