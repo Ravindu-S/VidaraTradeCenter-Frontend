@@ -46,3 +46,18 @@ export const loginUser = (data) => {
 export const getCurrentUser = () => {
   return API.get("/auth/me");
 };
+
+// POST /api/auth/forgot-password
+export const sendForgotPasswordEmail = (email) => {
+  return API.post("/auth/forgot-password", null, { params: { email } });
+};
+
+// POST /api/auth/reset-password
+export const resetPassword = (data) => {
+  return API.post("/auth/reset-password", data);
+};
+
+// GET /api/auth/verify-reset-token
+export const verifyResetToken = (token) => {
+  return API.get("/auth/verify-reset-token", { params: { token } });
+};
