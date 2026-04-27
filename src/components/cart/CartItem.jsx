@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Button from "../common/Button";
+
 import { useToast } from "../../context/ToastContext";
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   const [quantity, setQuantity] = useState(item.quantity);
   const [isUpdating, setIsUpdating] = useState(false);
-  const { showError, showSuccess } = useToast();
+  const { showError } = useToast();
 
   const formatPrice = (price) => {
     if (price == null) return "LKR 0.00";
